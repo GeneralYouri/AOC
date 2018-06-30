@@ -1,0 +1,21 @@
+{
+    "name": "advent-of-code",
+    "version": "1.0.0",
+    "description": "My collection of JS-based solutions for various Advent of Code challenges",
+    "main": "index.js",
+    "scripts": {
+        "eslint": "eslint src",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Youri Bok",
+    "license": "ISC",
+    "dependencies": {
+        "cross-env": "^5.1.3",
+        "yargs": "^10.1.1"
+    },
+    "devDependencies": {
+        "eslint": "^4.15.0",
+        "eslint-config-airbnb-base": "^12.1.0",
+        "eslint-plugin-import": "^2.8.0"
+    }
+}
