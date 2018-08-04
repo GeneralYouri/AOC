@@ -79,7 +79,12 @@ function recurse(node) {
 
 function parts(lines) {
     const root = createTree(lines);
-    const [, answer] = recurse(root);
+    let answer;
+    try {
+        recurse(root);
+    } catch (e) {
+        answer = e.message;
+    }
     return { part1: root.name, part2: answer };
 }
 
