@@ -5,7 +5,7 @@
     "main": "index.js",
     "scripts": {
         "eslint": "eslint src",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "jest"
     },
     "author": "Youri Bok",
     "license": "ISC",
@@ -16,6 +16,7 @@
     "devDependencies": {
         "eslint": "^4.15.0",
         "eslint-config-airbnb-base": "^12.1.0",
-        "eslint-plugin-import": "^2.8.0"
+        "eslint-plugin-import": "^2.8.0",
+        "jest": "^23.4.2"
     }
 }
