@@ -39,5 +39,8 @@ module.exports = {
 
         /** @see https://github.com/airbnb/javascript#modules--no-webpack-loader-syntax */
         'import/no-webpack-loader-syntax': 2,
+
+        // For this Node application, for .. of loops are just fine
+        'no-restricted-syntax': 0,
     },
 };
