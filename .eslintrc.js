@@ -1,5 +1,9 @@
 module.exports = {
     extends: 'airbnb-base',
+    plugins: ['jest'],
+    env: {
+        'jest/globals': true,
+    },
     rules: {
         // Allow debugger during development
         'no-debugger': process.env.NODE_ENV === 'production' ? 2 : 0,
