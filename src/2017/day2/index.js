@@ -1,45 +1,11 @@
-const { defInput } = require('./input.js');
+const part1 = require('./part1');
+const part2 = require('./part2');
+const defaultInput = require('./input');
 
-function parts(sheet) {
-    let sum1 = 0;
-    let sum2 = 0;
-
-    sheet.forEach((row) => {
-        let lowest = Infinity;
-        let highest = -Infinity;
-
-        row.forEach((value1) => {
-            if (value1 < lowest) {
-                lowest = value1;
-            }
-            if (value1 > highest) {
-                highest = value1;
-            }
-
-            row.forEach((value2) => {
-                if (value1 !== value2 && value1 % value2 === 0) {
-                    sum2 += value1 / value2;
-                }
-            });
-        });
-
-        sum1 += highest - lowest;
-    });
-
-    return { sum1, sum2 };
-}
-
-function test(input = defInput) {
-    const parsed = input.split(/\n/g).map(row => row.split(/\t/).map(Number));
-
-    const answer = parts(parsed);
-    console.log('Part 1 answer', answer.sum1);
-    console.log('Part 2 answer', answer.sum2);
-}
-
-exports.parts = parts;
-exports.test = test;
+module.exports = { part1, part2, defaultInput };
 
 if (module === require.main) {
-    exports.test(...process.argv.slice(2));
+    const input = process.argv[2] || defaultInput;
+    console.log('Part 1 answer:', part1(input));
+    console.log('Part 2 answer:', part2(input));
 }
