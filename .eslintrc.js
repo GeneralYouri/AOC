@@ -42,5 +42,8 @@ module.exports = {
 
         // For this Node application, for .. of loops are just fine
         'no-restricted-syntax': 0,
+
+        // Used 'after' since before airbnb-base enforced this rule with 'before', no need to change now
+        'operator-linebreak': [2, 'after'],
     },
 };
