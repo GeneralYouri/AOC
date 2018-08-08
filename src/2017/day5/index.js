@@ -1,48 +1,11 @@
-const { defInput } = require('./input.js');
+const part1 = require('./part1');
+const part2 = require('./part2');
+const defaultInput = require('./input');
 
-function part1(input) {
-    const offsets = input.slice();
-    let i = 0;
-    let steps = 0;
-
-    for (; i >= 0 && i < offsets.length; steps += 1) {
-        const offset = offsets[i];
-        offsets[i] += 1;
-        i += offset;
-    }
-
-    return steps;
-}
-
-function part2(input) {
-    const offsets = input.slice();
-    let i = 0;
-    let steps = 0;
-
-    for (; i >= 0 && i < offsets.length; steps += 1) {
-        const offset = offsets[i];
-        if (offset >= 3) {
-            offsets[i] -= 1;
-        } else {
-            offsets[i] += 1;
-        }
-        i += offset;
-    }
-
-    return steps;
-}
-
-function test(input = defInput) {
-    const parsed = input.split(/\n/g).map(Number);
-
-    console.log('Part 1 answer', part1(parsed));
-    console.log('Part 2 answer', part2(parsed));
-}
-
-exports.part1 = part1;
-exports.part2 = part2;
-exports.test = test;
+module.exports = { part1, part2, defaultInput };
 
 if (module === require.main) {
-    exports.test(...process.argv.slice(2));
+    const input = process.argv[2] || defaultInput;
+    console.log('Part 1 answer:', part1(input));
+    console.log('Part 2 answer:', part2(input));
 }
