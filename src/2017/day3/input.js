@@ -1,2 +1,1 @@
-module.exports.default = module.exports;
-module.exports.defInput = 325489;
+module.exports = '325489';
