@@ -1,5 +1,4 @@
-module.exports.default = module.exports;
-module.exports.defInput = 'nyot babgr babgr kqtu kqtu kzshonp ylyk psqk\n' +
+module.exports = 'nyot babgr babgr kqtu kqtu kzshonp ylyk psqk\n' +
     'iix ewj rojvbkk phrij iix zuajnk tadv givslju ewj bda\n' +
     'isjur jppvano vctnpjp ngwzdq pxqfrk mnxxes zqwgnd giqh\n' +
     'ojufqke gpd olzirc jfao cjfh rcivvw pqqpudp\n' +
