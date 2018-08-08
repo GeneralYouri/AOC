@@ -1,27 +1,19 @@
 module.exports = (input) => {
     const phrases = input.split(/\n/g).map(row => row.split(/ /));
 
-    let validPhrases = 0;
-
-    for (let i = 0; i < phrases.length; i += 1) {
-        const phrase = phrases[i];
+    return phrases.reduce((validPhrases, words) => {
         const wordsUsed = {};
 
         let isValid = true;
-        for (let j = 0; j < phrase.length; j += 1) {
-            const word = phrase[j];
-
+        for (const word of words) {
             if (wordsUsed[word]) {
                 isValid = false;
-            } else {
-                wordsUsed[word] = true;
+                break;
             }
+
+            wordsUsed[word] = true;
         }
 
-        if (isValid) {
-            validPhrases += 1;
-        }
-    }
-
-    return validPhrases;
+        return validPhrases + Number(isValid);
+    }, 0);
 };
