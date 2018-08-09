@@ -1,5 +1,4 @@
-module.exports.default = module.exports;
-module.exports.defInput = 'apcztdj (61)\n' +
+module.exports = 'apcztdj (61)\n' +
     'ulovosc (61) -> buzjgp, iimyluk\n' +
     'awpvs (88)\n' +
     'ykbjhi (14)\n' +
