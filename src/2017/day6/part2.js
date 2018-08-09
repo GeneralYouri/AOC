@@ -1,31 +1,36 @@
+const findHighest = (banks) => {
+    return banks.reduce(([highIndex, highValue], bank, index) => {
+        if (bank > highValue) {
+            return [index, bank];
+        }
+        return [highIndex, highValue];
+    }, [-1, Number.NEGATIVE_INFINITY]);
+};
+
 module.exports = (input) => {
     const banks = input.split(/\t/g).map(Number);
-    const statesVisited = {};
+    const seenBefore = {};
     let cycles = 0;
 
-    /* eslint-disable no-constant-condition */
-    while (true) {
+    let hash = banks.join(',');
+    while (!seenBefore[hash]) {
+        seenBefore[hash] = cycles;
         cycles += 1;
-        let largeValue = Number.NEGATIVE_INFINITY;
-        let largeIndex = -1;
 
+        const [highIndex, highValue] = findHighest(banks);
+
+        let toRedistribute = highValue;
+        banks[highIndex] = 0;
+
+        // Loop the banks only once, incrementing the calculated amount this bank should receive
         for (let i = 0; i < banks.length; i += 1) {
-            const bank = banks[i];
-            if (bank > largeValue) {
-                largeValue = bank;
-                largeIndex = i;
-            }
+            const toAdd = Math.ceil(toRedistribute / (banks.length - i));
+            toRedistribute -= toAdd;
+            banks[(highIndex + i + 1) % banks.length] += toAdd;
         }
 
-        banks[largeIndex] = 0;
-        for (let j = 1; j <= largeValue; j += 1) {
-            banks[(largeIndex + j) % banks.length] += 1;
-        }
-
-        const hash = banks.join(',');
-        if (statesVisited[hash]) {
-            return cycles - statesVisited[hash];
-        }
-        statesVisited[hash] = cycles;
+        hash = banks.join(',');
     }
+
+    return cycles - seenBefore[hash];
 };
