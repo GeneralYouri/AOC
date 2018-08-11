@@ -5,7 +5,11 @@ const defaultInput = require('./input');
 module.exports = { part1, part2, defaultInput };
 
 if (module === require.main) {
-    const input = process.argv[2] || defaultInput;
-    console.log('Part 1 answer:', part1(input));
-    console.log('Part 2 answer:', part2(input));
+    let input = process.argv.slice(2);
+    if (input.length === 0) {
+        input = Array.isArray(defaultInput) ? defaultInput : [defaultInput];
+    }
+
+    console.log('Part 1 answer:', part1(...input));
+    console.log('Part 2 answer:', part2(...input));
 }
