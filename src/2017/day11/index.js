@@ -1,45 +1,15 @@
-const { defInput } = require('./input.js');
+const part1 = require('./part1');
+const part2 = require('./part2');
+const defaultInput = require('./input');
 
-const directions2 = {
-    n: { x: 0, y: 1, z: -1 },
-    ne: { x: 1, y: 0, z: -1 },
-    se: { x: 1, y: -1, z: 0 },
-    s: { x: 0, y: -1, z: 1 },
-    sw: { x: -1, y: 0, z: 1 },
-    nw: { x: -1, y: 1, z: 0 },
-};
-
-function parts(input) {
-    let x = 0;
-    let y = 0;
-    let z = 0;
-    let steps = 0;
-    let maxSteps = 0;
-
-    for (let i = 0; i < input.length; i += 1) {
-        const dir = directions2[input[i]];
-        x += dir.x;
-        y += dir.y;
-        z += dir.z;
-
-        steps = Math.max(0, x) + Math.max(0, y) + Math.max(0, z);
-        maxSteps = Math.max(steps, maxSteps);
-    }
-
-    return { part1: steps, part2: maxSteps };
-}
-
-function test(input = defInput) {
-    const parsed = input.split(/,/g);
-
-    const answer = parts(parsed);
-    console.log('Part 1 answer', answer.part1);
-    console.log('Part 2 answer', answer.part2);
-}
-
-exports.parts = parts;
-exports.test = test;
+module.exports = { part1, part2, defaultInput };
 
 if (module === require.main) {
-    exports.test(...process.argv.slice(2));
+    let input = process.argv.slice(2);
+    if (input.length === 0) {
+        input = Array.isArray(defaultInput) ? defaultInput : [defaultInput];
+    }
+
+    console.log('Part 1 answer:', part1(...input));
+    console.log('Part 2 answer:', part2(...input));
 }
