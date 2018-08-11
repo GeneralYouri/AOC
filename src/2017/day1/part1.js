@@ -1,6 +1,8 @@
+const process = require('./process');
+
 module.exports = (input) => {
     const digits = input.split('').map(Number);
-    return digits
-        .filter((digit, index) => digit === digits[(index + 1) % digits.length])
-        .reduce((sum, digit) => sum + digit, 0);
+
+    // Filter all input digits to select only those identical to the next digit
+    return process(digits, index => digits[(index + 1) % digits.length]);
 };
