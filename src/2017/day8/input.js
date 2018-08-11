@@ -1,5 +1,4 @@
-module.exports.default = module.exports;
-module.exports.defInput = 'js inc 257 if wn < 9\n' +
+module.exports = 'js inc 257 if wn < 9\n' +
     'jq dec -586 if esb != -3\n' +
     'gcf inc -603 if i >= -9\n' +
     'gcf dec -300 if d != 1\n' +

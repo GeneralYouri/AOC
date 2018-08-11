@@ -2,35 +2,6 @@ const Tree = require('./tree');
 
 const parseLine = /^(\w+)\s*\((\d+)\)(?:\s*->\s*(.*))?$/;
 
-// TODO: This turned ugly, needs refactoring
-function recurse(node) {
-    const names = Object.keys(node.children);
-    if (names.length <= 1) {
-        return [node.name, node.weight];
-    }
-
-    const weights = [];
-    for (let i = 0; i < names.length; i += 1) {
-        const child = node.children[names[i]];
-        const [name, weight] = recurse(child);
-        weights.push([name, weight]);
-    }
-
-    weights.sort((a, b) => a.weight - b.weight);
-    const isBalanced = weights[0][1] === weights[weights.length - 1][1];
-    if (!isBalanced) {
-        const unbalancedIndex = weights[0][1] === weights[1][1] ? weights.length - 1 : 0;
-        const answer = weights[unbalancedIndex][0] + weights[1][1] - weights[unbalancedIndex][1];
-        console.log(answer, unbalancedIndex, weights[unbalancedIndex][0], weights[1][1], weights[unbalancedIndex][1]);
-        throw new Error(answer);
-    }
-
-    return [
-        node.weight,
-        weights[1][1] * weights.length + node.weight,
-    ];
-}
-
 function balanceTree(node) {
     if (node.children.length === 0) {
         node.cumulativeWeight = node.weight;
@@ -51,6 +22,8 @@ function balanceTree(node) {
         const unbalancedIndex = weights[0] === weights[1] ? weights.length - 1 : 0;
         return node.children[unbalancedIndex].weight + node.children[1].cumulativeWeight - node.children[unbalancedIndex].cumulativeWeight;
     }
+
+    return null;
 }
 
 module.exports = (input) => {
