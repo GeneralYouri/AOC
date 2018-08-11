@@ -23,8 +23,9 @@ const { argv } = require('yargs')
         },
         input: {
             alias: 'i',
-            type: 'string',
             implies: 'day',
+            array: true,
+            string: true,
         },
     });
 
@@ -38,18 +39,21 @@ days.forEach((day) => {
             throw new Error('Old file structure detected');
         }
 
-        const input = argv.input || defaultInput;
+        let input = argv.input;
+        if (!input) {
+            input = Array.isArray(defaultInput) ? defaultInput : [defaultInput];
+        }
 
         if (part1 && (argv.part === 0 || argv.part === 1)) {
             console.log(`${year}.${day}.1`);
-            console.log('Answer:', part1(input));
+            console.log('Answer:', part1(...input));
         }
         if (argv.part === 0) {
             console.log('----------');
         }
         if (part2 && (argv.part === 0 || argv.part === 2)) {
             console.log(`${year}.${day}.2`);
-            console.log('Answer:', part2(input));
+            console.log('Answer:', part2(...input));
         }
     } catch (error) {
         console.error(`${year}.${day} skipped ::`, error.message);
