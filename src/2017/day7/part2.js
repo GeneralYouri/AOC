@@ -1,50 +1,6 @@
+const Tree = require('./tree');
+
 const parseLine = /^(\w+)\s*\((\d+)\)(?:\s*->\s*(.*))?$/;
-
-function linkChildNodes(nodes, children) {
-    let names = Object.keys(children);
-    for (let i = 0; i < names.length; i += 1) {
-        const name = names[i];
-        const node = nodes[name];
-        /* eslint-disable no-param-reassign */
-        children[name] = node;
-        linkChildNodes(nodes, node.children);
-        node.linked = true;
-        names = Object.keys(children);
-    }
-}
-
-function createTree(lines) {
-    const nodes = {};
-
-    for (let i = 0; i < lines.length; i += 1) {
-        const line = lines[i];
-        const [name, weight, childLine] = parseLine.exec(line).slice(1);
-        const children = childLine ? childLine.split(/,\s*/g).reduce((acc, child) => {
-            acc[child] = null;
-            return acc;
-        }, {}) : {};
-
-        nodes[name] = {
-            name, weight: Number(weight), children, linked: false,
-        };
-    }
-
-    const names = Object.keys(nodes);
-    for (let i = 0; i < names.length; i += 1) {
-        const name = names[i];
-        const node = nodes[name];
-        linkChildNodes(nodes, node.children);
-    }
-
-    for (let i = 0; i < names.length; i += 1) {
-        const name = names[i];
-        if (!nodes[name].linked) {
-            return nodes[name];
-        }
-    }
-
-    throw new Error('Malformed input - no tree root element present');
-}
 
 // TODO: This turned ugly, needs refactoring
 function recurse(node) {
@@ -65,6 +21,7 @@ function recurse(node) {
     if (!isBalanced) {
         const unbalancedIndex = weights[0][1] === weights[1][1] ? weights.length - 1 : 0;
         const answer = weights[unbalancedIndex][0] + weights[1][1] - weights[unbalancedIndex][1];
+        console.log(answer, unbalancedIndex, weights[unbalancedIndex][0], weights[1][1], weights[unbalancedIndex][1]);
         throw new Error(answer);
     }
 
@@ -74,13 +31,39 @@ function recurse(node) {
     ];
 }
 
+function balanceTree(node) {
+    if (node.children.length === 0) {
+        node.cumulativeWeight = node.weight;
+        return null;
+    }
+
+    const answer = node.children.reduce((acc, child) => balanceTree(child) || acc, null);
+    if (answer !== null) {
+        return answer;
+    }
+
+    node.children.sort((a, b) => a.cumulativeWeight - b.v);
+    const weights = node.children.map(child => child.cumulativeWeight);
+    node.cumulativeWeight = node.weight + weights.reduce((acc, weight) => acc + weight, 0);
+
+    const isBalanced = weights[0] === weights[weights.length - 1];
+    if (!isBalanced) {
+        const unbalancedIndex = weights[0] === weights[1] ? weights.length - 1 : 0;
+        return node.children[unbalancedIndex].weight + node.children[1].cumulativeWeight - node.children[unbalancedIndex].cumulativeWeight;
+    }
+}
+
 module.exports = (input) => {
     const lines = input.split(/\n/g);
-    const root = createTree(lines);
-    try {
-        recurse(root);
-    } catch (e) {
-        return Number(e.message);
-    }
-    return undefined;
+
+    // Parse nodes
+    const nodes = lines.map((line) => {
+        const [name, weight, childLine] = parseLine.exec(line).slice(1);
+        const childNames = childLine ? childLine.split(/,\s*/g) : [];
+        return [name, Number(weight), childNames];
+    });
+
+    const tree = new Tree(nodes);
+
+    return balanceTree(tree.root);
 };
