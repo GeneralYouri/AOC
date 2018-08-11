@@ -1,50 +1,11 @@
-const { defInput } = require('./input.js');
+const part1 = require('./part1');
+const part2 = require('./part2');
+const defaultInput = require('./input');
 
-function parts(input) {
-    let index = 0;
-
-    let groups = 0;
-    let depth = 0;
-    let garbage = false;
-    let garbageCount = 0;
-
-    while (index < input.length) {
-        const char = input[index];
-
-        if (garbage) {
-            if (char === '!') {
-                index += 1;
-            } else if (char === '>') {
-                garbage = false;
-            } else {
-                garbageCount += 1;
-            }
-        } else if (!garbage) {
-            if (char === '{') {
-                depth += 1;
-                groups += depth;
-            } else if (char === '}') {
-                depth -= 1;
-            } else if (char === '<') {
-                garbage = true;
-            }
-        }
-
-        index += 1;
-    }
-
-    return { part1: groups, part2: garbageCount };
-}
-
-function test(input = defInput) {
-    const answer = parts(input);
-    console.log('Part 1 answer', answer.part1);
-    console.log('Part 2 answer', answer.part2);
-}
-
-exports.parts = parts;
-exports.test = test;
+module.exports = { part1, part2, defaultInput };
 
 if (module === require.main) {
-    exports.test(...process.argv.slice(2));
+    const input = process.argv[2] || defaultInput;
+    console.log('Part 1 answer:', part1(input));
+    console.log('Part 2 answer:', part2(input));
 }
