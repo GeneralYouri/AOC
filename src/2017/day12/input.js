@@ -1,5 +1,4 @@
-module.exports.default = module.exports;
-module.exports.defInput = '0 <-> 454, 528, 621, 1023, 1199\n' +
+module.exports = '0 <-> 454, 528, 621, 1023, 1199\n' +
     '1 <-> 1335, 1563, 1627, 1679\n' +
     '2 <-> 353, 689\n' +
     '3 <-> 3, 1171\n' +
