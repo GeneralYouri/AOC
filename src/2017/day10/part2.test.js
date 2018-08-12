@@ -8,5 +8,5 @@ test('Provided test cases', () => {
 });
 
 test('Puzzle input', () => {
-    expect(part2(...defaultInput)).toBe('7f94112db4e32e19cf6502073c66f9bb');
+    expect(part2(defaultInput)).toBe('7f94112db4e32e19cf6502073c66f9bb');
 });

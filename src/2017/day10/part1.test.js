@@ -5,5 +5,5 @@ test('Provided test cases', () => {
 });
 
 test('Puzzle input', () => {
-    expect(part1(...defaultInput)).toBe(52070);
+    expect(part1(defaultInput)).toBe(52070);
 });

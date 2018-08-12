@@ -39,7 +39,7 @@ days.forEach((day) => {
             throw new Error('Old file structure detected');
         }
 
-        let input = argv.input;
+        let { input } = argv;
         if (!input) {
             input = Array.isArray(defaultInput) ? defaultInput : [defaultInput];
         }
