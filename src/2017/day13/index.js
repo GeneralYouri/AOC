@@ -1,53 +1,17 @@
-const { defInput } = require('./input.js');
+const { readFileSync } = require('fs');
+const part1 = require('./part1');
+const part2 = require('./part2');
 
-function parts(input) {
-    const ranges = input.reduce((acc, [depth, range]) => {
-        acc[depth] = range;
-        return acc;
-    }, {});
+const defaultInput = readFileSync(require.resolve('./input.txt'), { encoding: 'UTF-8' });
 
-    const layers = Object.keys(ranges).map(Number);
-    const severities = [];
-
-    function testDelay(delay) {
-        severities[delay] = 0;
-        let caught = false;
-
-        for (let i = 0; i < layers.length; i += 1) {
-            const layer = layers[i];
-            const range = ranges[layer];
-            const mod = range * 2 - 2;
-
-            if ((layer + delay) % mod === 0) {
-                severities[delay] += layer * range;
-                caught = true;
-            }
-        }
-
-        return caught;
-    }
-
-    for (let delay = 0; testDelay(delay); delay += 1) ;
-    // let delay = 0;
-    // do {
-    //     testDelay(delay);
-    //     delay += 1;
-    // } while (!foundNotCaught);
-
-    return { part1: severities[0], part2: severities.length - 1 };
-}
-
-function test(input = defInput) {
-    const parsed = input.split(/\n/g).map(value => value.split(': ').map(Number));
-
-    const answer = parts(parsed);
-    console.log('Part 1 answer', answer.part1);
-    console.log('Part 2 answer', answer.part2);
-}
-
-exports.parts = parts;
-exports.test = test;
+module.exports = { part1, part2, defaultInput };
 
 if (module === require.main) {
-    exports.test(...process.argv.slice(2));
+    let input = process.argv.slice(2);
+    if (input.length === 0) {
+        input = Array.isArray(defaultInput) ? defaultInput : [defaultInput];
+    }
+
+    console.log('Part 1 answer:', part1(...input));
+    console.log('Part 2 answer:', part2(...input));
 }
