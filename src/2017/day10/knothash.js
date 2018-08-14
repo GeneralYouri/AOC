@@ -8,11 +8,11 @@ module.exports = class KnotHash {
 
     // Reverse a given portion of the list
     reverse(length) {
-        // Shifting the list first ensures no issues for start+length values that would exceed the list length
-        const listLength = this.list.length;
-        const shifted = [...this.list.splice(this.position), ...this.list];
-        const reversed = [...shifted.splice(0, length).reverse(), ...shifted];
-        this.list = [...reversed.splice(listLength - this.position), ...reversed];
+        for (let i = 0; i < length / 2; i += 1) {
+            const p1 = (this.position + i) % this.list.length;
+            const p2 = (this.position - i + length - 1) % this.list.length;
+            [this.list[p1], this.list[p2]] = [this.list[p2], this.list[p1]];
+        }
     }
 
     knot() {
