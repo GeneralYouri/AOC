@@ -12,6 +12,15 @@ if (module === require.main) {
         input = Array.isArray(defaultInput) ? defaultInput : [defaultInput];
     }
 
-    console.log('Part 1 answer:', part1(...input));
-    console.log('Part 2 answer:', part2(...input));
+    const start1 = process.hrtime();
+    const answer1 = part1(...input);
+    const time1 = process.hrtime(start1);
+    console.log('Part 1 answer:', answer1);
+    console.log('Part 1 time: %d ms', time1[0] * 1000 + time1[1] / 1000000);
+
+    const start2 = process.hrtime();
+    const answer2 = part2(...input);
+    const time2 = process.hrtime(start2);
+    console.log('Part 2 answer:', answer2);
+    console.log('Part 2 time: %d ms', time2[0] * 1000 + time2[1] / 1000000);
 }

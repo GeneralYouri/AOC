@@ -27,6 +27,11 @@ const { argv } = require('yargs')
             array: true,
             string: true,
         },
+        time: {
+            alias: 't',
+            type: 'bool',
+            default: false,
+        },
     });
 
 const { year } = argv;
@@ -46,14 +51,30 @@ days.forEach((day) => {
 
         if (part1 && (argv.part === 0 || argv.part === 1)) {
             console.log(`${year}.${day}.1`);
-            console.log('Answer:', part1(...input));
+            if (argv.time) {
+                const start = process.hrtime();
+                const answer = part1(...input);
+                const time = process.hrtime(start);
+                console.log('Answer:', answer);
+                console.log('Time: %d ms', time[0] * 1000 + time[1] / 1000000);
+            } else {
+                console.log('Answer:', part1(...input));
+            }
         }
         if (argv.part === 0) {
             console.log('----------');
         }
         if (part2 && (argv.part === 0 || argv.part === 2)) {
             console.log(`${year}.${day}.2`);
-            console.log('Answer:', part2(...input));
+            if (argv.time) {
+                const start = process.hrtime();
+                const answer = part2(...input);
+                const time = process.hrtime(start);
+                console.log('Answer:', answer);
+                console.log('Time: %d ms', time[0] * 1000 + time[1] / 1000000);
+            } else {
+                console.log('Answer:', part2(...input));
+            }
         }
     } catch (error) {
         console.error(`${year}.${day} skipped ::`, error.message);
