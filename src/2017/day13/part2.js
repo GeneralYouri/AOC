@@ -4,16 +4,20 @@
  * We then need to somehow return the lowest delay for which no scanner would catch the packet
  */
 module.exports = (input) => {
-    const scanners = input.split(/\n/g).map(value => value.split(': ').map(Number));
+    const scanners = input.split(/\n/g).map(value => value.split(': ').map(Number)).map(([depth, range]) => [depth, range * 2 - 2]);
 
-    for (let delay = 0; true; delay += 1) {
-        const notCaught = scanners.every(([depth, range]) => {
-            const cycle = range * 2 - 2;
-            const caught = (depth + delay) % cycle === 0;
-            return !caught;
-        });
-        if (notCaught) {
-            return delay;
+    const isCaught = (delay) => {
+        for (const [depth, range] of scanners) {
+            if (((depth + delay) % range) === 0) {
+                return true;
+            }
         }
+        return false;
+    };
+
+    let delay = 0;
+    while (isCaught(delay)) {
+        delay += 1;
     }
+    return delay;
 };
