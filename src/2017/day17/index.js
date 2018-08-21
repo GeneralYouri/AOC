@@ -1,54 +1,26 @@
-const { defInput } = require('./input.js');
+const { readFileSync } = require('fs');
+const part1 = require('./part1');
+const part2 = require('./part2');
 
-function Node(value) {
-    this.value = value;
-    this.next = this;
-}
+const defaultInput = readFileSync(require.resolve('./input.txt'), { encoding: 'UTF-8' });
 
-function part1(skips) {
-    const base = new Node(0);
-    let current = base;
-
-    for (let i = 1; i <= 2017; i += 1) {
-        for (let j = 0; j < skips % i; j += 1) {
-            current = current.next;
-        }
-
-        const insert = new Node(i);
-        insert.next = current.next;
-        current.next = insert;
-        current = insert;
-    }
-    return current.next.value;
-}
-
-function part2(skips) {
-    let result = 0;
-    let index = 0;
-
-    for (let i = 1; i <= 50000000; i += 1) {
-        index = (index + skips) % i + 1;
-
-        if (index === 1) {
-            result = i;
-            console.log(result);
-        }
-    }
-
-    return result;
-}
-
-function test(input = defInput) {
-    const parsed = Number(input);
-
-    console.log('Part 1 answer', part1(parsed));
-    console.log('Part 2 answer', part2(parsed));
-}
-
-exports.part1 = part1;
-exports.part2 = part2;
-exports.test = test;
+module.exports = { part1, part2, defaultInput };
 
 if (module === require.main) {
-    exports.test(...process.argv.slice(2));
+    let input = process.argv.slice(2);
+    if (input.length === 0) {
+        input = Array.isArray(defaultInput) ? defaultInput : [defaultInput];
+    }
+
+    const start1 = process.hrtime();
+    const answer1 = part1(...input);
+    const time1 = process.hrtime(start1);
+    console.log('Part 1 answer:', answer1);
+    console.log('Part 1 time: %d ms', time1[0] * 1000 + time1[1] / 1000000);
+
+    const start2 = process.hrtime();
+    const answer2 = part2(...input);
+    const time2 = process.hrtime(start2);
+    console.log('Part 2 answer:', answer2);
+    console.log('Part 2 time: %d ms', time2[0] * 1000 + time2[1] / 1000000);
 }
