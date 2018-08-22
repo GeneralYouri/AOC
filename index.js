@@ -93,6 +93,7 @@ years.forEach((year) => {
             console.log('==========');
         } catch (error) {
             console.log(`${year}.${day} skipped ::`, error.message);
+            console.log('==========');
         }
     });
 });
