@@ -13,14 +13,9 @@ module.exports = {
         // Other custom rules
         'max-len': 0,
         indent: ['error', 4, { SwitchCase: 1 }],
-        'no-param-reassign': ['error', {
-            props: true,
-            ignorePropertyModificationsFor: [
-                'acc', // for reduce accumulators
-                'e', // for e.returnvalue
-                'state', // for Vuex state handling
-            ],
-        }],
+
+        // This rule sounds good in theory, but there are too many exceptions where reassignment is wanted/needed, and the whitelist doesn't suffice
+        'no-param-reassign': 'off',
 
         // Operator precedence is a thing for a reason; there are plenty of cases where forcing extra brackets does not lead to an improvement
         'no-mixed-operators': 0,
@@ -39,6 +34,17 @@ module.exports = {
 
         /** @see https://github.com/airbnb/javascript#modules--no-webpack-loader-syntax */
         'import/no-webpack-loader-syntax': 2,
+
+        // Specifying unused function arguments isn't a problem and can add clarity
+        /** @see https://blog.javascripting.com/2015/09/07/fine-tuning-airbnbs-eslint-config/ */
+        'no-unused-vars': ['error', {
+            vars: 'local',
+            args: 'none',
+        }],
+
+        // In some cases it can be way more logical to use an else return, allow both styles
+        /** @see https://blog.javascripting.com/2015/09/07/fine-tuning-airbnbs-eslint-config/ */
+        'no-else-return': 'off',
 
         // For this Node application, for .. of loops are just fine
         'no-restricted-syntax': 0,
