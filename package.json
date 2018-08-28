@@ -5,7 +5,11 @@
     "main": "index.js",
     "scripts": {
         "eslint": "eslint src",
-        "test": "jest"
+        "test": "jest -w=2"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/GeneralYouri/AOC.git"
     },
     "author": "Youri Bok",
     "license": "MIT",
