@@ -13,6 +13,10 @@
     },
     "author": "Youri Bok",
     "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/GeneralYouri/project-euler/issues"
+    },
+    "homepage": "https://github.com/GeneralYouri/project-euler#readme",
     "dependencies": {
         "cross-env": "^5.2.0",
         "yargs": "^12.0.1"
