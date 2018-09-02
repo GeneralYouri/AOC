@@ -1,34 +1,40 @@
 const { argv } = require('yargs')
     .options({
         year: {
-            alias: ['y', 'years'],
+            alias: ['years', 'y'],
             array: true,
             default: [],
+            describe: 'The puzzle year(s) to run',
         },
         day: {
-            alias: ['d', 'days'],
+            alias: ['days', 'd'],
             array: true,
             default: [],
             implies: 'year',
+            describe: 'The puzzle day(s) to run',
         },
         part: {
             alias: 'p',
             type: 'number',
             default: 0,
             implies: 'day',
+            describe: 'The puzzle part (1 || 2) to run',
         },
         input: {
-            alias: 'i',
+            alias: ['inputs', 'i'],
             implies: 'day',
             array: true,
             string: true,
+            describe: 'The custom puzzle input, if any',
         },
         time: {
             alias: 't',
             type: 'bool',
             default: false,
+            describe: 'Record puzzle runtimes',
         },
-    });
+    })
+    .alias({ help: 'h', version: 'v' });
 
 const solutionsByYear = require('./src');
 
