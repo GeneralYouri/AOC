@@ -1,19 +1,14 @@
-/**
- * This is an adaptation of:
- * @see https://github.com/aoktayd/adventofcode/blob/master/run.js
- */
-
 const { argv } = require('yargs')
     .options({
         year: {
-            alias: 'y',
-            type: 'number',
-            default: 0,
+            alias: ['y', 'years'],
+            array: true,
+            default: [],
         },
         day: {
-            alias: 'd',
-            type: 'number',
-            default: 0,
+            alias: ['d', 'days'],
+            array: true,
+            default: [],
             implies: 'year',
         },
         part: {
@@ -40,9 +35,9 @@ const solutionsByYear = require('./src');
 module.exports = solutionsByYear;
 
 
-const years = argv.year ? [argv.year] : Object.keys(solutionsByYear);
+const years = argv.year.length ? argv.year : Object.keys(solutionsByYear);
+const days = argv.day.length ? argv.day : Array.from(Array(25)).map((_, index) => index + 1);
 years.forEach((year) => {
-    const days = argv.day ? [argv.day] : Array.from(Array(25)).map((_, index) => index + 1);
     days.forEach((day) => {
         try {
             // TODO: This whole sherade with error handling is ridiculous
