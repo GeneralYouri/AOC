@@ -1,5 +1,4 @@
-const dirs = ['right', 'up', 'left', 'down'];
-const deltas = [[1, 0], [0, -1], [-1, 0], [0, 1]];
+const deltas = [[1, 0], [0, -1], [-1, 0], [0, 1]]; // Counter-clockwise: right, up, left, down
 
 module.exports = (input) => {
     const square = Number(input);

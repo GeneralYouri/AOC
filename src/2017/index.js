@@ -6,5 +6,6 @@ const getDirectories = source => readdirSync(source).filter(name => lstatSync(jo
 module.exports = {};
 const days = getDirectories(__dirname);
 days.forEach((day) => {
+    /* eslint-disable-next-line global-require, import/no-dynamic-require */
     module.exports[day] = require(join(__dirname, day));
 });

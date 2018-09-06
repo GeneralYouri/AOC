@@ -1,6 +1,6 @@
 const { defInput } = require('./input.js');
 
-const dirs = ['up', 'right', 'down', 'left'];
+// Clockwise: up, right, down, left
 const dx = [0, 1, 0, -1];
 const dy = [-1, 0, 1, 0];
 
