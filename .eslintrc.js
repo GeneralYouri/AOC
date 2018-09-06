@@ -2,7 +2,18 @@ module.exports = {
     extends: 'airbnb-base',
     plugins: ['jest'],
     env: {
-        'jest/globals': true,
+        es6: true,
+        node: true,
+        jest: true,
+    },
+    globals: {
+        // Temporary workaround as long as ESLint can't properly support BigInt
+        BigInt: true,
+    },
+    parser: 'babel-eslint',
+    parserOptions: {
+        ecmaVersion: 2018,
+        sourceType: 'module',
     },
     rules: {
         // Allow debugger during development
