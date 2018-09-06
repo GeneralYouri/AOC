@@ -62,5 +62,8 @@ module.exports = {
 
         // Used 'after' since before airbnb-base enforced this rule with 'before', no need to change now
         'operator-linebreak': [2, 'after'],
+
+        // Another rule not specified by AirBnB themselves; continues can be useful to prevent excessive tabbing and separate logic
+        'no-continue': 'off',
     },
 };
