@@ -44,7 +44,22 @@ module.exports = solutionsByYear;
 
 const years = argv.year.length ? argv.year : Object.keys(solutionsByYear);
 const days = argv.day.length ? argv.day : Array.from(Array(25)).map((_, index) => index + 1);
+
+const runPart = (year, day, partFn, input) => {
+    const startTime = process.hrtime.bigint();
+    const answer = partFn(...input);
+    const endTime = process.hrtime.bigint();
+    const time = Number(endTime - startTime) / 1000000;
+    console.log('Answer:', answer);
+    if (argv.time) {
+        console.log('Time: %d ms', time);
+    }
+    return time;
+};
+
+let timeTotal = 0;
 years.forEach((year) => {
+    let timeYear = 0;
     days.forEach((day) => {
         try {
             // TODO: This whole sherade with error handling is ridiculous
@@ -67,35 +82,24 @@ years.forEach((year) => {
 
             if (part1 && (argv.part === 0 || argv.part === 1)) {
                 console.log(`${year}.${day}.1`);
-                if (argv.time) {
-                    const start = process.hrtime();
-                    const answer = part1(...input);
-                    const time = process.hrtime(start);
-                    console.log('Answer:', answer);
-                    console.log('Time: %d ms', time[0] * 1000 + time[1] / 1000000);
-                } else {
-                    console.log('Answer:', part1(...input));
-                }
-            }
-            if (argv.part === 0) {
-                console.log('----------');
+                timeYear += runPart(year, day, part1, input);
             }
             if (part2 && (argv.part === 0 || argv.part === 2)) {
                 console.log(`${year}.${day}.2`);
-                if (argv.time) {
-                    const start = process.hrtime();
-                    const answer = part2(...input);
-                    const time = process.hrtime(start);
-                    console.log('Answer:', answer);
-                    console.log('Time: %d ms', time[0] * 1000 + time[1] / 1000000);
-                } else {
-                    console.log('Answer:', part2(...input));
-                }
+                timeYear += runPart(year, day, part2, input);
             }
-            console.log('==========');
+            console.log('----------');
         } catch (error) {
             console.log(`${year}.${day} skipped ::`, error.message);
-            console.log('==========');
+            console.log('----------');
         }
     });
+    timeTotal += timeYear;
+    if (argv.time && days.length > 1) {
+        console.log('%d total time: %d ms', year, timeYear);
+        console.log('==========');
+    }
 });
+if (argv.time && years.length > 1) {
+    console.log('All years total time: %d ms', timeTotal);
+}
