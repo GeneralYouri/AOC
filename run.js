@@ -67,10 +67,29 @@ const runPart = (year, day, part, fn, input) => {
         return false;
     }
 
+    // Temporary suppress console.log
+    const oldLogger = console.log;
+    console.log = () => {
+    };
+
+    // Run and time the solution
     const startTime = process.hrtime.bigint();
-    const answer = fn(...input);
+    let answer;
+    try {
+        answer = fn(...input);
+    } catch (error) {
+        // Restore console.log
+        console.log = oldLogger;
+
+        console.log(formatError([year, day, part], error.message));
+        return false;
+    }
+
     const endTime = process.hrtime.bigint();
     const time = Number(endTime - startTime) / 1000000;
+
+    // Restore console.log
+    console.log = oldLogger;
 
     console.log(formatInfo([year, day, part], time, answer));
     return time;
@@ -122,7 +141,7 @@ years.forEach((year) => {
     if (days.length > 1) {
         const yearLog = formatTotal([year], timeYear, solvedYear);
         yearTotals.push(yearLog);
-        console.log('------------+-------------------+-----------');
+        console.log('------------+-------------------+----------------');
         console.log(yearLog);
         console.log('');
     }
@@ -130,6 +149,6 @@ years.forEach((year) => {
 
 if (years.length > 1) {
     yearTotals.forEach(log => console.log(log));
-    console.log('============+===================+===========');
+    console.log('============+===================+================');
     console.log(formatTotal('All-time', timeTotal, solvedTotal, Object.keys(allSolutions).length * 50));
 }
