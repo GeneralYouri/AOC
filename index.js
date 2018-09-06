@@ -42,8 +42,8 @@ const solutionsByYear = require('./src');
 module.exports = solutionsByYear;
 
 
-const years = Array.isArray(argv.year) ? argv.year : Object.keys(solutionsByYear);
-const days = Array.isArray(argv.day) ? argv.day : Array.from(Array(25)).map((_, index) => index + 1);
+const years = argv.year.length ? argv.year : Object.keys(solutionsByYear);
+const days = argv.day.length ? argv.day : Array.from(Array(25)).map((_, index) => index + 1);
 years.forEach((year) => {
     days.forEach((day) => {
         try {
