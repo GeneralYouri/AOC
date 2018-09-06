@@ -1,3 +1,29 @@
+// TODO: This alternative approach
+module.exports = (input) => {
+    const jump = Number(input);
+
+    // First we find on what index 2017 ends up at, while ignoring the actual values
+    let pos = 0;
+    for (let i = 1; i <= 2017; i += 1) {
+        pos = (pos + jump) % i + 1;
+    }
+    let want = pos + 1;
+
+    // Then we walk back through the algorithm until the last time we inserted at the index that eventually comes after 2017
+    let result;
+    for (result = 2017; pos !== want; result -= 1) {
+        if (pos < want) {
+            want -= 1;
+        }
+        pos -= jump + 1;
+        if (pos < 0) {
+            pos += result;
+        }
+    }
+    return result;
+};
+
+
 function Node(value) {
     this.value = value;
     this.next = this;

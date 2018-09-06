@@ -1,4 +1,10 @@
-const Node = require('./node');
+class Node {
+    constructor(name, weight, children) {
+        this.name = name;
+        this.weight = weight;
+        this.children = children;
+    }
+}
 
 module.exports = class Tree {
     constructor(nodeData) {

@@ -4,6 +4,15 @@ const findHighest = (banks) => {
     }, [-1, Number.NEGATIVE_INFINITY]);
 };
 
+// Loop the banks only once, incrementing the calculated amount this bank should receive
+const redistribute = (banks, amount, baseIndex) => {
+    for (let i = 0; i < banks.length; i += 1) {
+        const toAdd = Math.ceil(amount / (banks.length - i));
+        amount -= toAdd;
+        banks[(baseIndex + i + 1) % banks.length] += toAdd;
+    }
+};
+
 module.exports = (banks, getStepCount) => {
     const seenBefore = {};
     let cycles = 0;
@@ -14,15 +23,8 @@ module.exports = (banks, getStepCount) => {
         cycles += 1;
 
         const [highIndex, highBank] = findHighest(banks);
-        let toRedistribute = highBank;
         banks[highIndex] = 0;
-
-        // Loop the banks only once, incrementing the calculated amount this bank should receive
-        for (let i = 0; i < banks.length; i += 1) {
-            const toAdd = Math.ceil(toRedistribute / (banks.length - i));
-            toRedistribute -= toAdd;
-            banks[(highIndex + i + 1) % banks.length] += toAdd;
-        }
+        redistribute(banks, highBank, highIndex);
 
         hash = banks.join(',');
     }
