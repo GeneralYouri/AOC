@@ -55,10 +55,11 @@ const formatError = ([year, day = '', part = ''], message) => {
 };
 
 const formatTotal = (year, time, solved, solvedMax = 50) => {
-    const header = year.toString().padEnd(11, ' ');
+    const header = year.toString().padEnd(9, ' ');
     const timeStr = formatTime(time).slice(0, 8).padStart(8, ' ');
     const solvedStr = solved.toString().padStart(2, ' ');
-    return `${header} | \x1b[38;5;240mTime:\x1b[0m ${timeStr} ms | \x1b[38;5;240mSolved:\x1b[0m ${solvedStr} / ${solvedMax}`;
+    const emote = solved === solvedMax ? '✅' : '❌';
+    return `${header} ${emote} | \x1b[38;5;240mTime:\x1b[0m ${timeStr} ms | \x1b[38;5;240mSolved:\x1b[0m ${solvedStr} / ${solvedMax}`;
 };
 
 const runPart = (year, day, part, fn, input) => {
@@ -67,7 +68,7 @@ const runPart = (year, day, part, fn, input) => {
         return false;
     }
 
-    // Temporary suppress console.log
+    // Temporarily suppress console.log
     const oldLogger = console.log;
     console.log = () => {
     };
@@ -139,7 +140,7 @@ years.forEach((year) => {
     timeTotal += timeYear;
     solvedTotal += solvedYear;
     if (days.length > 1) {
-        const yearLog = formatTotal([year], timeYear, solvedYear);
+        const yearLog = formatTotal([year], timeYear, solvedYear, days.length * 2);
         yearTotals.push(yearLog);
         console.log('------------+-------------------+----------------');
         console.log(yearLog);
