@@ -5,7 +5,8 @@
     "main": "index.js",
     "scripts": {
         "eslint": "eslint src",
-        "test": "jest -w=2"
+        "test": "jest -w=2 -t=\"Puzzle input\"",
+        "test-full": "jest -w=2"
     },
     "repository": {
         "type": "git",
