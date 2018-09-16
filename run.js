@@ -28,12 +28,18 @@ const { argv } = require('yargs')
             string: true,
             describe: 'The custom puzzle input, if any',
         },
+        console: {
+            alias: ['suppress-console', 'c'],
+            type: 'boolean',
+        },
     })
     .alias({ help: 'h', version: 'v' });
 
 const { formatInfo, formatError, formatTotal } = require('./lib');
 const allSolutions = require('./src');
 
+
+const allowConsole = argv.console !== undefined ? argv.console : allSolutions.length <= 1 && allSolutions[0].length <= 1;
 
 const runPart = (year, day, part, fn, input) => {
     if (!fn) {
@@ -43,8 +49,10 @@ const runPart = (year, day, part, fn, input) => {
 
     // Temporarily suppress console.log
     const oldLogger = console.log;
-    console.log = () => {
-    };
+    if (!allowConsole) {
+        console.log = () => {
+        };
+    }
 
     // Run and time the solution
     const startTime = process.hrtime.bigint();
@@ -53,7 +61,9 @@ const runPart = (year, day, part, fn, input) => {
         answer = fn(...input);
     } catch (error) {
         // Restore console.log
-        console.log = oldLogger;
+        if (!allowConsole) {
+            console.log = oldLogger;
+        }
 
         console.log(formatError([year, day, part], error.message));
         return false;
@@ -63,7 +73,9 @@ const runPart = (year, day, part, fn, input) => {
     const time = Number(endTime - startTime) / 1000000;
 
     // Restore console.log
-    console.log = oldLogger;
+    if (!allowConsole) {
+        console.log = oldLogger;
+    }
 
     console.log(formatInfo([year, day, part], time, answer));
     return time;
