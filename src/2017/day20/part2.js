@@ -7,27 +7,26 @@ const tick = (p) => {
 
 module.exports = (input) => {
     // Per particle: [position, velocity, acceleration]
-    const particles = input.split(/\n/g).map(line => line.match(/<.*?>/g).map(coord => coord.slice(1, -1).split(',').map(Number)));
+    const particles = new Set(input.split(/\n/g).map(line => line.match(/<.*?>/g).map(coord => coord.slice(1, -1).split(',').map(Number))));
 
-    let particleCount = particles.length;
     // Still not sure how to determine 'when all collisions are resolved' (my puzzle input required 39), so just iterating a good amount instead
     for (let t = 0; t < 100; t += 1) {
-        const perPosition = {};
+        const byPosition = {};
         particles.forEach((particle) => {
             tick(particle);
             const pos = particle[0].toString(); // position
-            if (!(pos in perPosition)) {
-                perPosition[pos] = [];
+            if (!(pos in byPosition)) {
+                byPosition[pos] = [];
             }
-            perPosition[pos].push(particle);
+            byPosition[pos].push(particle);
         });
 
-        Object.values(perPosition).forEach((items) => {
+        Object.values(byPosition).forEach((items) => {
             if (items.length > 1) {
-                particleCount -= items.length;
+                items.forEach(item => particles.delete(item));
             }
         });
     }
 
-    return particleCount;
+    return particles.size;
 };
