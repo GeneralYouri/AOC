@@ -61,13 +61,13 @@ const runPart = (year, day, part, fn, input) => {
     }
 
     const bindFn = fn.bind(null, ...input);
-    let answer;
+    const answer = bindFn();
     let time = 0;
     for (let run = 1; run <= argv.runs; run += 1) {
         // Run and time the solution
         const startTime = process.hrtime.bigint();
         try {
-            answer = bindFn();
+            bindFn();
         } catch (error) {
             // Restore console.log
             if (!allowConsole) {
