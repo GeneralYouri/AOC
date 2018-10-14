@@ -28,6 +28,12 @@ const { argv } = require('yargs')
             string: true,
             describe: 'The custom puzzle input, if any',
         },
+        runs: {
+            alias: ['repeat', 'r'],
+            type: 'number',
+            default: 1,
+            describe: 'How many times every solution should be run; the runtimes will be averaged',
+        },
         console: {
             alias: ['suppress-console', 'c'],
             type: 'boolean',
@@ -54,23 +60,27 @@ const runPart = (year, day, part, fn, input) => {
         };
     }
 
-    // Run and time the solution
-    const startTime = process.hrtime.bigint();
     let answer;
-    try {
-        answer = fn(...input);
-    } catch (error) {
-        // Restore console.log
-        if (!allowConsole) {
-            console.log = oldLogger;
+    let time = 0;
+    for (let run = 1; run <= argv.runs; run += 1) {
+        // Run and time the solution
+        const startTime = process.hrtime.bigint();
+        try {
+            answer = fn(...input);
+        } catch (error) {
+            // Restore console.log
+            if (!allowConsole) {
+                console.log = oldLogger;
+            }
+
+            console.log(formatError([year, day, part], error.message));
+            return false;
         }
 
-        console.log(formatError([year, day, part], error.message));
-        return false;
+        const endTime = process.hrtime.bigint();
+        time += Number(endTime - startTime) / 1000000;
     }
-
-    const endTime = process.hrtime.bigint();
-    const time = Number(endTime - startTime) / 1000000;
+    time /= argv.runs;
 
     // Restore console.log
     if (!allowConsole) {
