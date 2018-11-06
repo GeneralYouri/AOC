@@ -1,3 +1,8 @@
+// TODO:
+// Potentially rework to unify the solutions, by abstracting the differences
+// Accept an array of possible states, defined by their state transition functions
+// Basically just an abstract state machine
+
 const { defInput } = require('./input.js');
 
 // Clockwise: up, right, down, left
