@@ -12,11 +12,11 @@ module.exports = (input, programCount = 16, iterations = 1000000000) => {
     const results = [];
     let result;
 
-    for (let i = iterations; i > 0; i -= 1) {
+    for (let i = 0; i < iterations; i += 1) {
         result = dance.perform();
 
         if (result in found) {
-            return results[i % (found[result] - i) - 1];
+            return results[iterations % i - 1];
         }
 
         results.push(result);
