@@ -1,15 +1,15 @@
 module.exports = (input) => {
-    const changes = input.split(/\n/g);
+    const deltas = input.split(/\n/g);
     const seen = {};
     let frequency = 0;
+
     while (true) {
-        for (const change of changes) {
-            frequency += Number(change);
-            console.log(Number(change), frequency);
+        for (const delta of deltas) {
+            seen[frequency] = true;
+            frequency += Number(delta);
             if (seen[frequency]) {
                 return frequency;
             }
-            seen[frequency] = true;
         }
     }
 };
