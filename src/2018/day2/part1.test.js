@@ -1,7 +1,8 @@
 const { part1, defaultInput } = require('./');
 
 test('Provided test cases', () => {
-    const input = 'abcdef\n' +
+    const input =
+        'abcdef\n' +
         'bababc\n' +
         'abbcde\n' +
         'abcccd\n' +
