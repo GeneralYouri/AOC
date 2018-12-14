@@ -18,6 +18,8 @@ const formatError = ([year, day = '', part = ''], message) => {
     return `\x1b[31m${header}\x1b[0m ❌ | \x1b[31mSkip:\x1b[0m             | \x1b[31m${message}\x1b[0m`;
 };
 
+const formatSeparator = (char = '-') => `${char.repeat(12)}+${char.repeat(19)}+${char.repeat(16)}`;
+
 const formatTotal = (year, time, solved, solvedMax = 50) => {
     const header = year.toString().padEnd(9, ' ');
     const timeStr = formatTime(time).slice(0, 8).padStart(8, ' ');
@@ -39,6 +41,7 @@ const runSolution = (name, fn, input) => {
 module.exports = {
     formatInfo,
     formatError,
+    formatSeparator,
     formatTotal,
     runSolution,
 };

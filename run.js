@@ -41,7 +41,7 @@ const { argv } = require('yargs')
     })
     .alias({ help: 'h', version: 'v' });
 
-const { formatInfo, formatError, formatTotal } = require('./lib');
+const { formatInfo, formatError, formatSeparator, formatTotal } = require('./lib');
 const allSolutions = require('./src');
 
 
@@ -138,7 +138,7 @@ years.forEach((year) => {
     if (days.length > 1) {
         const yearLog = formatTotal([year], timeYear, solvedYear, days.length * 2);
         yearTotals.push(yearLog);
-        console.log('------------+-------------------+----------------');
+        console.log(formatSeparator());
         console.log(yearLog);
         console.log('');
     }
@@ -146,6 +146,6 @@ years.forEach((year) => {
 
 if (years.length > 1) {
     yearTotals.forEach(log => console.log(log));
-    console.log('============+===================+================');
+    console.log(formatSeparator('='));
     console.log(formatTotal('All-time', timeTotal, solvedTotal, Object.keys(allSolutions).length * 50));
 }
