@@ -1,18 +1,23 @@
 module.exports = (input) => {
-    const boxes = input.split(/\n/g);
+    const hashes = input.split(/\n/g);
+    const hashCount = hashes.length;
+    const hashLength = hashes[0].length / 2;
 
-    for (let a = 0; a < boxes.length; a += 1) {
-        const boxA = boxes[a];
-        for (let b = a + 1; b < boxes.length; b += 1) {
-            const boxB = boxes[b];
+    for (let i = 0; i < hashCount - 1; i += 1) {
+        const x = hashes[i].split('');
+        for (let j = i + 1; j < hashCount; j += 1) {
+            const y = hashes[j].split('');
             let diff = 0;
-            for (let i = 0; i < boxA.length; i += 1) {
-                if (boxA[i] !== boxB[i]) {
+            let index = 0;
+            for (let c = 0; c < hashLength; c += 1) {
+                if (x[c] !== y[c] || x[-c] !== y[-c]) {
                     diff += 1;
+                    index = c;
                 }
             }
             if (diff === 1) {
-                return boxA.split('').filter((letterA, indexA) => letterA === boxB[indexA]).join('');
+                x.splice(index, 1);
+                return x.join('');
             }
         }
     }
