@@ -49,8 +49,7 @@ const allowConsole = argv.console !== undefined ? argv.console : allSolutions.le
 
 const runPart = (year, day, part, fn, input) => {
     if (!fn) {
-        console.log(formatError([year, day, part], 'No solution yet'));
-        return false;
+        throw new Error('No solution yet');
     }
 
     // Temporarily suppress console.log
@@ -62,6 +61,15 @@ const runPart = (year, day, part, fn, input) => {
 
     const bindFn = fn.bind(null, ...input);
     const answer = bindFn();
+    if (answer === undefined) {
+        // Restore console.log
+        if (!allowConsole) {
+            console.log = oldLogger;
+        }
+
+        throw new Error('No solution yet');
+    }
+
     let time = 0;
     for (let run = 1; run <= argv.runs; run += 1) {
         // Run and time the solution
@@ -74,8 +82,7 @@ const runPart = (year, day, part, fn, input) => {
                 console.log = oldLogger;
             }
 
-            console.log(formatError([year, day, part], error.message));
-            return false;
+            throw new Error(error.message);
         }
 
         const endTime = process.hrtime.bigint();
@@ -88,8 +95,7 @@ const runPart = (year, day, part, fn, input) => {
         console.log = oldLogger;
     }
 
-    console.log(formatInfo([year, day, part], time, answer));
-    return time;
+    return [answer, time];
 };
 
 const years = argv.year.length ? argv.year : Object.keys(allSolutions);
@@ -124,10 +130,15 @@ years.forEach((year) => {
 
         [1, 2].forEach((part) => {
             if (argv.part === 0 || argv.part === part) {
-                const timePart = runPart(year, day, part, solutionDay['part' + part], input);
-                if (timePart) {
-                    timeYear += timePart;
-                    solvedYear += 1;
+                try {
+                    const [answer, timePart] = runPart(year, day, part, solutionDay['part' + part], input);
+                    console.log(formatInfo([year, day, part], timePart, answer));
+                    if (timePart) {
+                        timeYear += timePart;
+                        solvedYear += 1;
+                    }
+                } catch (error) {
+                    console.log(formatError([year, day, part], error.message));
                 }
             }
         });
