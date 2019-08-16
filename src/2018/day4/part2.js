@@ -1,36 +1,38 @@
 module.exports = (input) => {
     const guardLines = input.split(/\n/g).sort();
-    const guards = {};
+    const guardsById = {};
 
     let currentId;
     let startMinute;
     let endMinute;
 
-    let xMinute = -1;
-    let xMinutes = -1;
-    let xId = -1;
-
     for (const line of guardLines) {
-        if (line.includes('begins shift')) {
-            currentId = Number(line.split(' ')[3].slice(1));
-            if (!guards[currentId]) {
-                guards[currentId] = [];
+        if (line.endsWith('begins shift')) {
+            currentId = Number(line.match(/#(\d+)/)[1]);
+            if (!guardsById[currentId]) {
+                guardsById[currentId] = Array(60).fill(0);
             }
-        } else if (line.includes('falls asleep')) {
-            startMinute = Number(line.split(':')[1].slice(0, 2));
-        } else if (line.includes('wakes up')) {
-            endMinute = Number(line.split(':')[1].slice(0, 2));
+        } else if (line.endsWith('falls asleep')) {
+            startMinute = Number(line.match(/:(\d+)/)[1]);
+        } else if (line.endsWith('wakes up')) {
+            endMinute = Number(line.match(/:(\d+)/)[1]);
             for (let minute = startMinute; minute < endMinute; minute += 1) {
-                guards[currentId][minute] = (guards[currentId][minute] || 0) + 1;
-
-                if (guards[currentId][minute] > xMinutes) {
-                    xMinutes = guards[currentId][minute];
-                    xMinute = minute;
-                    xId = currentId;
-                }
+                guardsById[currentId][minute] += 1;
             }
         }
     }
 
-    return xId * xMinute;
+    let best = -1;
+    let bestMinute = -1;
+    let bestId = -1;
+    for (const id of Object.keys(guardsById)) {
+        const mostAsleepMinute = Math.max(...guardsById[id]);
+        if (mostAsleepMinute > best) {
+            best = mostAsleepMinute;
+            bestMinute = guardsById[id].findIndex(timesAsleep => timesAsleep === mostAsleepMinute);
+            bestId = id;
+        }
+    }
+
+    return bestId * bestMinute;
 };

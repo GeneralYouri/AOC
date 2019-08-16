@@ -1,23 +1,31 @@
 module.exports = (input) => {
     const hashes = input.split(/\n/g);
     const hashCount = hashes.length;
-    const hashLength = hashes[0].length / 2;
+    const hashLength = hashes[0].length;
 
-    for (let i = 0; i < hashCount - 1; i += 1) {
-        const x = hashes[i].split('');
-        for (let j = i + 1; j < hashCount; j += 1) {
-            const y = hashes[j].split('');
+    for (let a = 0; a < hashCount - 1; a += 1) {
+        const charsA = hashes[a];
+        for (let b = a + 1; b < hashCount; b += 1) {
+            const charsB = hashes[b];
             let diff = 0;
             let index = 0;
-            for (let c = 0; c < hashLength; c += 1) {
-                if (x[c] !== y[c] || x[-c] !== y[-c]) {
+            for (let i = 0; i < hashLength / 2; i += 1) {
+                if (charsA[i] !== charsB[i]) {
                     diff += 1;
-                    index = c;
+                    if (diff > 1) {
+                        break;
+                    }
+                    index = i;
+                } else if (charsA[-i] !== charsB[-i]) {
+                    diff += 1;
+                    if (diff > 1) {
+                        break;
+                    }
+                    index = -i;
                 }
             }
             if (diff === 1) {
-                x.splice(index, 1);
-                return x.join('');
+                return charsA.slice(0, index) + charsA.slice(index + 1);
             }
         }
     }

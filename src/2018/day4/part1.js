@@ -1,45 +1,39 @@
 module.exports = (input) => {
     const guardLines = input.split(/\n/g).sort();
-    const guards = {};
-    const minutesAsleep = {};
+    const guardsById = {};
+    const minutesAsleepById = {};
 
     let currentId;
     let startMinute;
     let endMinute;
 
-    let mostAsleepMinutes = -1;
     let mostAsleepId = -1;
+    let mostAsleepMinutes = -1;
 
     for (const line of guardLines) {
-        if (line.includes('begins shift')) {
-            currentId = Number(line.split(' ')[3].slice(1));
-            if (!guards[currentId]) {
-                guards[currentId] = [];
+        if (line.endsWith('begins shift')) {
+            currentId = Number(line.match(/#(\d+)/)[1]);
+            if (!guardsById[currentId]) {
+                guardsById[currentId] = Array(60).fill(0);
+                minutesAsleepById[currentId] = 0;
             }
-        } else if (line.includes('falls asleep')) {
-            startMinute = Number(line.split(':')[1].slice(0, 2));
-        } else if (line.includes('wakes up')) {
-            endMinute = Number(line.split(':')[1].slice(0, 2));
+        } else if (line.endsWith('falls asleep')) {
+            startMinute = Number(line.match(/:(\d+)/)[1]);
+        } else {
+            endMinute = Number(line.match(/:(\d+)/)[1]);
             for (let minute = startMinute; minute < endMinute; minute += 1) {
-                guards[currentId][minute] = (guards[currentId][minute] || 0) + 1;
+                guardsById[currentId][minute] += 1;
             }
 
-            minutesAsleep[currentId] = (minutesAsleep[currentId] || 0) + endMinute - startMinute;
-            if (minutesAsleep[currentId] > mostAsleepMinutes) {
-                mostAsleepMinutes = minutesAsleep[currentId];
+            minutesAsleepById[currentId] += endMinute - startMinute;
+            if (minutesAsleepById[currentId] > mostAsleepMinutes) {
+                mostAsleepMinutes = minutesAsleepById[currentId];
                 mostAsleepId = currentId;
             }
         }
     }
 
-    let mostAsleepMinute = -1;
-    guards[mostAsleepId].reduce((acc, count, minute) => {
-        if (count > acc) {
-            mostAsleepMinute = minute;
-            return count;
-        }
-        return acc;
-    }, 0);
-
-    return mostAsleepId * mostAsleepMinute;
+    const mostAsleepMinute = Math.max(...guardsById[mostAsleepId]);
+    const mostAsleepMinuteId = guardsById[mostAsleepId].findIndex(timesAsleep => timesAsleep === mostAsleepMinute);
+    return mostAsleepId * mostAsleepMinuteId;
 };
