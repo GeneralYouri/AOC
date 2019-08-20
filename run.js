@@ -31,8 +31,14 @@ const { argv } = require('yargs')
         runs: {
             alias: ['repeat', 'r'],
             type: 'number',
-            default: 1,
+            conflicts: 'time',
             describe: 'How many times every solution should be run; the runtimes will be averaged',
+        },
+        time: {
+            alias: ['targetTime', 't'],
+            type: 'number',
+            conflicts: 'runs',
+            describe: 'How much time to give for benchmarking every solution; a reasonable run count will be calculated',
         },
         console: {
             alias: ['suppress-console', 'c'],
@@ -43,6 +49,7 @@ const { argv } = require('yargs')
 
 const { formatInfo, formatError, formatSeparator, formatTotal } = require('./lib');
 const allSolutions = require('./src');
+const { benchmark } = require('./benchmark');
 
 
 const allowConsole = argv.console !== undefined ? argv.console : allSolutions.length <= 1 && allSolutions[0].length <= 1;
@@ -59,43 +66,28 @@ const runPart = (year, day, part, fn, input) => {
         };
     }
 
-    const bindFn = fn.bind(null, ...input);
-    const answer = bindFn();
-    if (answer === undefined) {
+    try {
+        const answer = fn.call(null, ...input);
+        if (answer === undefined) {
+            throw new Error('No solution yet');
+        }
+
+        const time = benchmark({ fn, params: input, runs: argv.runs, targetTime: argv.time });
+
         // Restore console.log
         if (!allowConsole) {
             console.log = oldLogger;
         }
 
-        throw new Error('No solution yet');
-    }
-
-    let time = 0;
-    for (let run = 1; run <= argv.runs; run += 1) {
-        // Run and time the solution
-        const startTime = process.hrtime.bigint();
-        try {
-            bindFn();
-        } catch (error) {
-            // Restore console.log
-            if (!allowConsole) {
-                console.log = oldLogger;
-            }
-
-            throw new Error(error.message);
+        return [answer, time];
+    } catch (error) {
+        // Restore console.log
+        if (!allowConsole) {
+            console.log = oldLogger;
         }
 
-        const endTime = process.hrtime.bigint();
-        time += Number(endTime - startTime) / 1000000;
+        throw new Error(error.message);
     }
-    time /= argv.runs;
-
-    // Restore console.log
-    if (!allowConsole) {
-        console.log = oldLogger;
-    }
-
-    return [answer, time];
 };
 
 const years = argv.year.length ? argv.year : Object.keys(allSolutions);
@@ -126,10 +118,10 @@ years.forEach((year) => {
             return;
         }
 
-        const input = argv.input ? argv.input : [solutionDay.defaultInput];
+        const input = argv.input || [solutionDay.defaultInput];
 
         [1, 2].forEach((part) => {
-            if (argv.part === 0 || argv.part === part) {
+            if ((argv.part ^ part) !== 3) {
                 try {
                     const [answer, timePart] = runPart(year, day, part, solutionDay['part' + part], input);
                     console.log(formatInfo([year, day, part], timePart, answer));
