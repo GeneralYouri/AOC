@@ -28,17 +28,23 @@ const { argv } = require('yargs')
             string: true,
             describe: 'The custom puzzle input, if any',
         },
+        time: {
+            alias: ['targetTime', 't'],
+            type: 'number',
+            conflicts: 'runs',
+            describe: 'How much time to give for benchmarking every solution; a reasonable run count will be calculated',
+        },
         runs: {
             alias: ['repeat', 'r'],
             type: 'number',
             conflicts: 'time',
             describe: 'How many times every solution should be run; the runtimes will be averaged',
         },
-        time: {
-            alias: ['targetTime', 't'],
+        minRuns: {
+            alias: ['minRepeat', 'm'],
             type: 'number',
-            conflicts: 'runs',
-            describe: 'How much time to give for benchmarking every solution; a reasonable run count will be calculated',
+            default: 1,
+            describe: 'The minimum number of times every solution should be run in case the target time doesn\'t allow for a sufficient number of runs',
         },
         console: {
             alias: ['suppress-console', 'c'],
@@ -72,7 +78,7 @@ const runPart = (year, day, part, fn, input) => {
             throw new Error('No solution yet');
         }
 
-        const time = benchmark({ fn, params: input, runs: argv.runs, targetTime: argv.time });
+        const time = benchmark({ fn, params: input, targetTime: argv.time, targetRuns: argv.runs, minRuns: argv.minRuns });
 
         // Restore console.log
         if (!allowConsole) {

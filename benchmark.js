@@ -1,30 +1,35 @@
-const benchmark = ({ fn, params = [], runs, targetTime }) => {
+const benchmark = ({ fn, params = [], targetTime, targetRuns, minRuns }) => {
     if (typeof fn !== 'function') {
         throw new TypeError('Can only benchmark a function');
     }
 
-    if (!targetTime) {
+    if (!targetTime && !targetRuns) {
         targetTime = 1;
     }
 
-    if (!runs) {
+    if (!targetRuns) {
         const startTime = process.hrtime.bigint();
         fn.call(null, ...params);
         const endTime = process.hrtime.bigint();
 
         const benchTime = Number(endTime - startTime);
-        runs = Math.max(1, Number((1e9 * targetTime / Number(benchTime)).toPrecision(1)));
+        targetRuns = Math.max(minRuns || 1, Number((1e9 * targetTime / Number(benchTime)).toPrecision(1)));
     }
 
     let totalTime = 0;
-    for (let run = 1; run <= runs; run += 1) {
-        const startTime = process.hrtime.bigint();
-        fn.call(null, ...params);
-        const endTime = process.hrtime.bigint();
+    let batches = 0;
+    do {
+        for (let run = 1; run <= targetRuns; run += 1) {
+            const startTime = process.hrtime.bigint();
+            fn.call(null, ...params);
+            const endTime = process.hrtime.bigint();
 
-        totalTime += Number(endTime - startTime);
-    }
-    return totalTime / 1e6 / runs;
+            totalTime += Number(endTime - startTime);
+        }
+        batches += 1;
+    } while (targetTime && totalTime / 1e9 * (batches + 1) < targetTime * batches);
+    console.log(`Ran ${batches * targetRuns} in ${batches} batches of ${targetRuns} runs each for a total time of ${totalTime / 1e9} out of ${targetTime}`);
+    return totalTime / 1e6 / (batches * targetRuns);
 };
 
 module.exports = { benchmark };
