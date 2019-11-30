@@ -3,17 +3,16 @@ const deltas = [[1, 0], [0, -1], [-1, 0], [0, 1]]; // Counter-clockwise: right, 
 module.exports = (input) => {
     const square = Number(input);
 
-    const grid = { 0: { 0: 1 } };
-    let x = 0;
-    let y = 0;
+    const maxSize = Math.trunc(Math.log10(square) / 2 + 4);
+    const grid = Array.from(Array(2 * maxSize)).map(() => Array(2 * maxSize).fill(0));
+    let x = maxSize;
+    let y = maxSize;
+    grid[x][y] = 1;
 
     let dir = 0;
     let nDir = 1;
     let [dx, dy] = deltas[dir];
     let [ndx, ndy] = deltas[nDir];
-
-    // Get the grid value for given position, defaults to 0 for grid positions that don't have a value yet
-    const tryGet = (getX, getY) => grid[getX] && grid[getX][getY] || 0;
 
     let highest = 0;
     while (highest <= square) {
@@ -23,17 +22,14 @@ module.exports = (input) => {
 
         // Add and subtract values from relevant positions only
         for (let i = -1; i <= 1; i += 1) {
-            highest += tryGet(x + dx + dy * i, y + dy + dx * i);
-            highest -= tryGet(x - dx - dx + dy * i, y - dy - dy + dx * i);
+            highest += grid[x + dx + dy * i][y + dy + dx * i];
+            highest -= grid[x - dx - dx + dy * i][y - dy - dy + dx * i];
         }
 
-        if (!grid[x]) {
-            grid[x] = {};
-        }
         grid[x][y] = highest;
 
         // Adjust position deltas when a corner is detected
-        if (!grid[x + ndx] || !grid[x + ndx][y + ndy]) {
+        if (grid[x + ndx][y + ndy] === 0) {
             dir = nDir;
             nDir = (dir + 1) % 4;
             [dx, dy] = deltas[dir];
