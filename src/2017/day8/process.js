@@ -1,4 +1,4 @@
-const parseLine = /^(\w+)\s+(inc|dec)\s+(-?\d+)\s+if\s+(\w+)\s+([=!<>]+)\s+(-?\d+)$/;
+const parseLine = /^(\w+) (inc|dec) (-?\d+) if (\w+) ([=!<>]+) (-?\d+)$/;
 
 const conditions = {
     '==': (value, compare) => value === compare,
@@ -17,6 +17,7 @@ const operations = {
 const getRegister = (registers, register) => {
     if (!(register in registers)) {
         registers[register] = 0;
+        return 0;
     }
 
     return registers[register];
@@ -27,19 +28,17 @@ module.exports = (commands, onAfterOperation = () => {}) => {
 
     commands.forEach((commandString) => {
         const [register, operation, amount, ...condition] = parseLine.exec(commandString).slice(1, 7);
-        const [conditionRegister, conditionOperation, conditionCompare] = condition;
+        const [cndRegister, cndOperation, cndCompare] = condition;
 
         const value = getRegister(registers, register);
-        const conditionValue = getRegister(registers, conditionRegister);
+        const cndValue = getRegister(registers, cndRegister);
 
-        const applyCondition = conditions[conditionOperation];
-        const applyOperation = operations[operation];
-
-        if (applyCondition(conditionValue, Number(conditionCompare))) {
+        const applyCondition = conditions[cndOperation];
+        if (applyCondition(cndValue, Number(cndCompare))) {
+            const applyOperation = operations[operation];
             registers[register] = applyOperation(value, Number(amount));
+            onAfterOperation(registers[register]);
         }
-
-        onAfterOperation(registers[register]);
     });
 
     return registers;
