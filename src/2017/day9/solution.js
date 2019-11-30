@@ -1,5 +1,6 @@
-module.exports = (input, garbageCollector = () => {}) => {
-    let groupCount = 0;
+module.exports = (input) => {
+    let part1 = 0;
+    let part2 = 0;
     let depth = 0;
     let garbage = false;
     let garbagePile = 0;
@@ -12,15 +13,15 @@ module.exports = (input, garbageCollector = () => {}) => {
                 i += 1;
             } else if (char === '>') {
                 garbage = false;
-                garbageCollector(garbagePile);
+                part2 += garbagePile;
                 garbagePile = 0;
             } else {
                 garbagePile += 1;
             }
-        } else if (!garbage) {
+        } else {
             if (char === '{') {
                 depth += 1;
-                groupCount += depth;
+                part1 += depth;
             } else if (char === '}') {
                 depth -= 1;
             } else if (char === '<') {
@@ -29,5 +30,5 @@ module.exports = (input, garbageCollector = () => {}) => {
         }
     }
 
-    return groupCount;
+    return [part1, part2];
 };
