@@ -1,25 +1,25 @@
 const findHighest = (banks) => {
-    return banks.reduce(([highIndex, highBank], bank, index) => {
-        return (bank > highBank) ? [index, bank] : [highIndex, highBank];
-    }, [-1, Number.NEGATIVE_INFINITY]);
+    const maxValue = Math.max(...banks);
+    return Array.from(banks.entries()).find(([, value]) => value === maxValue);
 };
 
-// Loop the banks only once, incrementing the calculated amount this bank should receive
 const redistribute = (banks, amount, baseIndex) => {
-    for (let i = 0; i < banks.length; i += 1) {
-        const toAdd = Math.ceil(amount / (banks.length - i));
-        amount -= toAdd;
-        banks[(baseIndex + i + 1) % banks.length] += toAdd;
+    for (let i = baseIndex + 1; amount > 0; i += 1) {
+        if (i === banks.length) {
+            i = 0;
+        }
+        banks[i] += 1;
+        amount -= 1;
     }
 };
 
-module.exports = (banks, getStepCount) => {
-    const seenBefore = {};
+module.exports = (banks) => {
+    const seenBefore = new Map();
     let cycles = 0;
 
     let hash = banks.join(',');
-    while (!seenBefore[hash]) {
-        seenBefore[hash] = cycles;
+    while (!seenBefore.has(hash)) {
+        seenBefore.set(hash, cycles);
         cycles += 1;
 
         const [highIndex, highBank] = findHighest(banks);
@@ -29,5 +29,5 @@ module.exports = (banks, getStepCount) => {
         hash = banks.join(',');
     }
 
-    return getStepCount(cycles, seenBefore[hash]);
+    return [cycles, seenBefore.get(hash)];
 };
