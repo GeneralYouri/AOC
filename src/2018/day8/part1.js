@@ -3,18 +3,18 @@ function Node() {
     this.metadata = [];
 }
 
-const parseNode = (stream, parent, metadataSum) => {
-    const childrenCount = stream.shift();
-    const metadataCount = stream.shift();
-    for (let c = 0; c < childrenCount; c += 1) {
+const parseNode = (stream, parent) => {
+    const childrenCount = Number(stream.shift());
+    const metadataCount = Number(stream.shift());
+    const childSum = Array.from(Array(childrenCount)).reduce((sum, _, c) => {
         parent.children[c] = new Node();
-        metadataSum = parseNode(stream, parent.children[c], metadataSum);
-    }
-    for (let m = 0; m < metadataCount; m += 1) {
+        return sum + parseNode(stream, parent.children[c]);
+    }, 0);
+    const metaSum = Array.from(Array(metadataCount)).reduce((sum, _, m) => {
         parent.metadata[m] = stream.shift();
-        metadataSum += Number(parent.metadata[m]);
-    }
-    return metadataSum;
+        return sum + Number(parent.metadata[m]);
+    }, 0);
+    return childSum + metaSum;
 };
 
 module.exports = (input) => {

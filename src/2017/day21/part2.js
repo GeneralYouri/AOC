@@ -101,8 +101,8 @@ module.exports = (input, iterations = 18) => {
     let patterns = { [base]: 1 };
     for (let i = 0; i < iterations / 3; i += 1) {
         patterns = iterate(patterns);
-        console.log(patterns);
-        console.log(countActivePixels(patterns));
+        // console.log(patterns);
+        // console.log(countActivePixels(patterns));
     }
 
     return countActivePixels(patterns);

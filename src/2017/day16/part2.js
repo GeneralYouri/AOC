@@ -1,26 +1,28 @@
 const Dance = require('./dance');
 
-// TODO:
-// Try a more efficient approach that calculates permutations for the dance (separately for x+s and p moves)
-// Once calculated for one dance, they can be easily multiplied to apply to a billion dances
-// We're essentially merging all the different input moves together and then applying those
+const regexes = {
+    s: /^s([a-z0-9]{1,2})$/,
+    x: /^\w([a-z0-9]{1,2})\/([a-z0-9]{1,2})$/,
+    p: /^\w([a-z0-9]{1,2})\/([a-z0-9]{1,2})$/,
+};
+
 module.exports = (input, programCount = 16, iterations = 1000000000) => {
-    const moves = input.split(/,/g).map(value => [value[0], ...value.slice(1).split(/\//)]);
+    const moves = input.split(/,/g).map(value => [value[0], value.match(regexes[value[0]]).slice(1)]);
     const dance = new Dance(programCount, moves);
 
-    const found = {};
+    const found = new Set();
     const results = [];
     let result;
 
     for (let i = 0; i < iterations; i += 1) {
         result = dance.perform();
 
-        if (result in found) {
+        if (found.has(result)) {
             return results[iterations % i - 1];
         }
 
         results.push(result);
-        found[result] = i;
+        found.add(result);
     }
 
     return result;

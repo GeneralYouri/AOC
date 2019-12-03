@@ -1,6 +1,7 @@
-// We can theoretically leave out the `sqrt`, and even replace the `** 2` with `Math.abs`, but neither seemed to meaningfully influence performance
-const getManhattanDistance = p => Math.sqrt(p[0] ** 2 + p[1] ** 2 + p[2] ** 2);
+// We can theoretically use our own formula and leave out the `sqrt`, even replace the `** 2` with `Math.abs`, but neither seemed to meaningfully influence performance
+const getManhattanDistance = p => Math.hypot(...p);
 
+// TODO: This doesn't work for all inputs; consider two particles `A=1, V=1, P=0` and `A=1, V=-2, P=0`
 module.exports = (input) => {
     // Per particle: [position, velocity, acceleration]
     const particles = input.split(/\n/g).map(line => line.match(/<.*?>/g).map(coord => coord.slice(1, -1).split(',').map(Number)));

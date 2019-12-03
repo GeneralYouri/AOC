@@ -34,11 +34,7 @@ module.exports = (input) => {
         } else {
             marble = addAfter(m, marble.next);
         }
-
-        if (player >= playerCount) {
-            player -= playerCount;
-        }
-        player += 1;
+        player = player % playerCount + 1;
     }
 
     return Math.max(...Object.values(scores));

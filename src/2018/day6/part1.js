@@ -3,11 +3,16 @@ const manhattan = ([x1, y1], [x2, y2]) => Math.abs(x1 - x2) + Math.abs(y1 - y2);
 module.exports = (input) => {
     const coordinates = input.split(/\n/g).map(line => line.split(', ').map(Number));
 
+    const X = coordinates.map(([cx]) => cx);
+    const Y = coordinates.map(([, cy]) => cy);
+    const [lowX, highX] = [Math.min(...X), Math.max(...X)];
+    const [lowY, highY] = [Math.min(...Y), Math.max(...Y)];
+
     const sizes = coordinates.map(() => 0);
     const infinites = [];
 
-    for (let x = 0; x < 400; x += 1) {
-        for (let y = 0; y < 400; y += 1) {
+    for (let x = lowX; x <= highX; x += 1) {
+        for (let y = lowY; y <= highY; y += 1) {
             let closestCoord = null;
             let closestDistance = Number.POSITIVE_INFINITY;
 
@@ -23,7 +28,7 @@ module.exports = (input) => {
 
             if (closestCoord !== null) {
                 sizes[closestCoord] += 1;
-                if (x === 0 || x === 399 || y === 0 || y === 399) {
+                if (x === lowX || x === highX || y === lowY || y === highY) {
                     infinites.push(closestCoord);
                 }
             }

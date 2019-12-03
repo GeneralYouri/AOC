@@ -1,8 +1,6 @@
 const { part2: knotHash } = require('../day10/index.js');
 
-function hexToBin(hex) {
-    return hex.split('').map(char => parseInt(char, 16).toString(2).padStart(4, '0')).join('');
-}
+const hexToBin = hex => hex.split('').map(char => parseInt(char, 16).toString(2).padStart(4, '0')).join('');
 
 const neighbourDeltas = [{ x: 0, y: -1 }, { x: 1, y: 0 }, { x: 0, y: 1 }, { x: -1, y: 0 }];
 
@@ -23,7 +21,7 @@ module.exports = (input) => {
         }
 
         const square = hashes[x][y];
-        const index = y * 128 + x;
+        const index = 128 * y + x;
 
         if (square === 1 && !groups[index]) {
             groups[index] = true;

@@ -1,3 +1,3 @@
 module.exports = (input) => {
-    return undefined;
+    return null;
 };

@@ -36,7 +36,7 @@ class Dance {
 
     perform() {
         for (let i = 0; i < this.danceMoves.length; i += 1) {
-            const [operation, ...args] = this.danceMoves[i];
+            const [operation, args] = this.danceMoves[i];
             this[operation](...args);
         }
 

@@ -16,12 +16,13 @@ module.exports = (input) => {
                         break;
                     }
                     index = i;
-                } else if (charsA[-i] !== charsB[-i]) {
+                }
+                if (charsA[hashLength - i] !== charsB[hashLength - i]) {
                     diff += 1;
                     if (diff > 1) {
                         break;
                     }
-                    index = -i;
+                    index = hashLength - i;
                 }
             }
             if (diff === 1) {
