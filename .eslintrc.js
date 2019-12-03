@@ -59,6 +59,13 @@ module.exports = {
             args: 'none',
         }],
 
+        // Increases the maximum allowed number of properties between curly braces from 3 to 4 (before forcing multiline)
+        'object-curly-newline': ['error', {
+            minProperties: 5,
+            multiline: true,
+            consistent: true,
+        }],
+
         // Used 'after' since before airbnb-base enforced this rule with 'before', no need to change now
         'operator-linebreak': ['error', 'after'],
 
