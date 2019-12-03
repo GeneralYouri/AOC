@@ -5,21 +5,21 @@ const { argv } = require('yargs')
             alias: ['years', 'y'],
             array: true,
             default: [],
-            describe: 'The puzzle year(s) to run',
+            describe: 'The puzzle year(s) to run, 0 for the most recent',
         },
         day: {
             alias: ['days', 'd'],
             array: true,
             default: [],
             implies: 'year',
-            describe: 'The puzzle day(s) to run',
+            describe: 'The puzzle day(s) to run, 0 for the most recent',
         },
         part: {
             alias: 'p',
             type: 'number',
-            default: 0,
+            default: 3,
             implies: 'day',
-            describe: 'The puzzle part (1 || 2) to run',
+            describe: 'The puzzle part (1 || 2) to run (0 for combined solution, 3 for both parts)',
         },
         input: {
             alias: ['inputs', 'i'],
@@ -60,7 +60,7 @@ const { benchmark } = require('./benchmark');
 
 const allowConsole = argv.console !== undefined ? argv.console : allSolutions.length <= 1 && allSolutions[0].length <= 1;
 
-const runPart = (year, day, part, fn, input) => {
+const runSolution = (fn, input) => {
     if (!fn) {
         throw new Error('No solution yet');
     }
@@ -103,6 +103,13 @@ const yearTotals = [];
 let timeTotal = 0;
 let solvedTotal = 0;
 years.forEach((year) => {
+    if (year === 0) {
+        year = Math.max(...Object.keys(allSolutions));
+        while (!allSolutions[year]) {
+            year -= 1;
+        }
+    }
+
     const solutionYear = allSolutions[year];
     let timeYear = 0;
     let solvedYear = 0;
@@ -114,22 +121,37 @@ years.forEach((year) => {
     }
 
     days.forEach((day) => {
-        const solutionDay = solutionYear['day' + day];
-        if (!solutionDay) {
-            console.log(formatError([year, day], 'No solution yet'));
-            return;
+        if (day === 0) {
+            day = 25;
+            while (!solutionYear['day' + day]) {
+                day -= 1;
+            }
         }
-        if (!solutionDay.defaultInput) {
-            console.log(formatError([year, day], 'Old file structure detected'));
+
+        const solutionDay = solutionYear['day' + day];
+        if (!solutionDay || !solutionDay.defaultInput) {
+            console.log(formatError([year, day], 'No solution yet'));
             return;
         }
 
         const input = argv.input || [solutionDay.defaultInput];
 
+        if (argv.part === 0) {
+            try {
+                const [answer, timePart] = runSolution(solutionDay.solution, input);
+                console.log(formatInfo([year, day], timePart, answer));
+                if (timePart) {
+                    timeYear += timePart;
+                    solvedYear += 1;
+                }
+            } catch (error) {
+                console.log(formatError([year, day], error.message));
+            }
+        }
         [1, 2].forEach((part) => {
-            if ((argv.part ^ part) !== 3) {
+            if ((argv.part & part) !== 0) {
                 try {
-                    const [answer, timePart] = runPart(year, day, part, solutionDay['part' + part], input);
+                    const [answer, timePart] = runSolution(solutionDay['part' + part], (days.length === 25 && day === 25 && part === 2) ? [...input, solvedYear] : input);
                     console.log(formatInfo([year, day, part], timePart, answer));
                     if (timePart) {
                         timeYear += timePart;
@@ -145,7 +167,7 @@ years.forEach((year) => {
     timeTotal += timeYear;
     solvedTotal += solvedYear;
     if (days.length > 1) {
-        const yearLog = formatTotal([year], timeYear, solvedYear, days.length * 2);
+        const yearLog = formatTotal([year], timeYear, solvedYear, days.length * Math.trunc(argv.part / 3 + 1));
         yearTotals.push(yearLog);
         console.log(formatSeparator());
         console.log(yearLog);

@@ -28,7 +28,7 @@ const benchmark = ({ fn, params = [], targetTime, targetRuns, minRuns }) => {
         }
         batches += 1;
     } while (targetTime && totalTime / 1e9 * (batches + 1) < targetTime * batches);
-    console.log(`Ran ${batches * targetRuns} in ${batches} batches of ${targetRuns} runs each for a total time of ${totalTime / 1e9} out of ${targetTime}`);
+    console.log(`Ran ${batches * targetRuns} times in ${batches} batches of ${targetRuns} runs each for a total time of ${totalTime / 1e9} out of ${targetTime}`);
     return totalTime / 1e6 / (batches * targetRuns);
 };
 

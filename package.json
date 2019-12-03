@@ -6,7 +6,8 @@
     "scripts": {
         "eslint": "eslint src",
         "test": "jest -w=2 -t=\"Puzzle input\"",
-        "test-full": "jest -w=2"
+        "test-full": "jest -w=2",
+        "run-latest": "node . -y 0 -d 0"
     },
     "repository": {
         "type": "git",
