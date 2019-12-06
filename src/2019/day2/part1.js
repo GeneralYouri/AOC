@@ -1,10 +1,4 @@
-const intcode = require('./intcode');
-
-const instructions = {
-    1: (mem, param1, param2, param3) => { mem[param3] = mem[param1] + mem[param2]; },
-    2: (mem, param1, param2, param3) => { mem[param3] = mem[param1] * mem[param2]; },
-    99: mem => false,
-};
+const Intcode = require('./intcode');
 
 module.exports = (input, override = true) => {
     const integers = input.split(/,/g).map(Number);
@@ -12,6 +6,7 @@ module.exports = (input, override = true) => {
         integers[1] = 12;
         integers[2] = 2;
     }
-    const result = intcode(integers, instructions);
-    return result[0];
+    const runner = new Intcode(integers);
+    runner.run();
+    return runner.mem[0];
 };
