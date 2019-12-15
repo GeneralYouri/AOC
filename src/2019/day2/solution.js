@@ -1,51 +1,29 @@
-const doPart1 = (mem) => {
-    mem[1] = 12;
-    mem[2] = 2;
-    for (let i = 0; i < mem.length; i += 4) {
-        const opcode = mem[i];
-        if (opcode === 1) {
-            mem[mem[i + 3]] = mem[mem[i + 1]] + mem[mem[i + 2]];
-        } else if (opcode === 2) {
-            mem[mem[i + 3]] = mem[mem[i + 1]] * mem[mem[i + 2]];
-        } else if (opcode === 99) {
-            break;
-        }
-    }
-    return mem[0];
-};
-
-const doPart2 = (integers) => {
-    // let last = 0;
-    for (let noun = 0; noun < 100; noun += 1) {
-        for (let verb = 0; verb < 100; verb += 1) {
-            const mem = integers.slice();
-            mem[1] = noun;
-            mem[2] = verb;
-            for (let i = 0; i < mem.length; i += 4) {
-                const opcode = mem[i];
-                if (opcode === 1) {
-                    mem[mem[i + 3]] = mem[mem[i + 1]] + mem[mem[i + 2]];
-                } else if (opcode === 2) {
-                    mem[mem[i + 3]] = mem[mem[i + 1]] * mem[mem[i + 2]];
-                } else if (opcode === 99) {
-                    if (verb === 0) {
-                        // console.log(noun, verb, mem[0], '+' + (mem[0] - last));
-                        // last = mem[0];
-                    }
-                    if (mem[0] === 19690720) {
-                        return 100 * noun + verb;
-                    }
-                    break;
-                }
-            }
-        }
-    }
-    return undefined;
-};
+const noun = 12;
+const verb = 2;
+const targetValue = 19690720;
 
 module.exports = (input) => {
-    const integers = input.split(/,/g).map(Number);
-    const part1 = doPart1(integers.slice());
-    const part2 = doPart2(integers);
+    const mem1 = input.split(/,/g).map(Number);
+    const mem2 = mem1.slice();
+
+    mem1[1] = noun;
+    mem1[2] = verb;
+    for (let i = 0; mem1[i] !== 99; i += 4) {
+        const opcode = mem1[i];
+        if (opcode === 1) {
+            mem1[mem1[i + 3]] = mem1[mem1[i + 1]] + mem1[mem1[i + 2]];
+            mem2[mem2[i + 3]] = mem2[mem2[i + 1]] + mem2[mem2[i + 2]];
+        } else if (opcode === 2) {
+            mem1[mem1[i + 3]] = mem1[mem1[i + 1]] * mem1[mem1[i + 2]];
+            mem2[mem2[i + 3]] = mem2[mem2[i + 1]] * mem2[mem2[i + 2]];
+        }
+    }
+
+    const part1 = mem1[0];
+    const nullValue = mem2[0];
+    const nounValue = (part1 - nullValue - verb) / 12;
+    const targetNoun = Math.floor((targetValue - nullValue) / nounValue);
+    const targetVerb = targetValue - targetNoun * nounValue - nullValue;
+    const part2 = 100 * targetNoun + targetVerb;
     return [part1, part2];
 };

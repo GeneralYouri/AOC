@@ -14,5 +14,10 @@ For part 2 we test all values 0-99 for both indices, and return for which of tho
 ---
 
 The performance-based solution obviously doesn't use the abstracted Intcode interpreter.
-Instead it runs a fairly low-level implementation, very similar to my initial code when speedcoding it.
-Despite the fact that part 1's answer will be found during part 2's execution, combining them took too much overhead so they're separate.
+
+For this solution, testing various noun,verb combos shows an obvious pattern to be found in the output values.
+For my input, verb +1 means output +460800, and noun +1 means output +1; only the verb delta varies between inputs.
+
+With this knowledge we run an extremely low-level stripped down version of the Intcode logic on two memory banks at once.
+One memory bank is set to noun,verb of 12,2 for part 1, the other uses 0,0 which gives a base output value.
+With these two output values we find the value of a verb, and can thus extrapolate what noun,verb is needed for our target output value.
