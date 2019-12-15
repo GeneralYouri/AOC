@@ -15,6 +15,7 @@ const doPart1 = (mem) => {
 };
 
 const doPart2 = (integers) => {
+    // let last = 0;
     for (let noun = 0; noun < 100; noun += 1) {
         for (let verb = 0; verb < 100; verb += 1) {
             const mem = integers.slice();
@@ -27,6 +28,10 @@ const doPart2 = (integers) => {
                 } else if (opcode === 2) {
                     mem[mem[i + 3]] = mem[mem[i + 1]] * mem[mem[i + 2]];
                 } else if (opcode === 99) {
+                    if (verb === 0) {
+                        // console.log(noun, verb, mem[0], '+' + (mem[0] - last));
+                        // last = mem[0];
+                    }
                     if (mem[0] === 19690720) {
                         return 100 * noun + verb;
                     }

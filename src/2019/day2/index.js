@@ -8,12 +8,14 @@ const defaultInput = readFileSync(require.resolve('./input.txt'), { encoding: 'U
 module.exports = { solution, part1, part2, defaultInput };
 
 if (module === require.main) {
-    let input = process.argv.slice(2);
-    if (input.length === 0) {
-        input = Array.isArray(defaultInput) ? defaultInput : [defaultInput];
-    }
+    (async () => {
+        let input = process.argv.slice(2);
+        if (input.length === 0) {
+            input = Array.isArray(defaultInput) ? defaultInput : [defaultInput];
+        }
 
-    runSolution('Part 1', part1, input);
-    runSolution('Part 2', part2, input);
-    runSolution('Both Parts', solution, input);
+        await runSolution('Part 1', part1, input);
+        await runSolution('Part 2', part2, input);
+        await runSolution('Both Parts', solution, input);
+    })();
 }
