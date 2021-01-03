@@ -1,4 +1,4 @@
-const benchmark = ({ fn, params = [], targetTime, targetRuns, minRuns }) => {
+const benchmark = async ({ fn, params = [], targetTime, targetRuns, minRuns }) => {
     if (typeof fn !== 'function') {
         throw new TypeError('Can only benchmark a function');
     }
@@ -9,7 +9,7 @@ const benchmark = ({ fn, params = [], targetTime, targetRuns, minRuns }) => {
 
     if (!targetRuns) {
         const startTime = process.hrtime.bigint();
-        fn.call(null, ...params);
+        await fn.call(null, ...params);
         const endTime = process.hrtime.bigint();
 
         const benchTime = Number(endTime - startTime);
@@ -21,7 +21,7 @@ const benchmark = ({ fn, params = [], targetTime, targetRuns, minRuns }) => {
     do {
         for (let run = 1; run <= targetRuns; run += 1) {
             const startTime = process.hrtime.bigint();
-            fn.call(null, ...params);
+            await fn.call(null, ...params);
             const endTime = process.hrtime.bigint();
 
             totalTime += Number(endTime - startTime);

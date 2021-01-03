@@ -33,9 +33,9 @@ const formatTotal = (year, time, solved, solvedMax = 50) => {
 };
 
 
-const runSolution = (name, fn, input) => {
+const runSolution = async (name, fn, input) => {
     const start = process.hrtime.bigint();
-    const answer = fn.call(null, ...input);
+    const answer = await fn.call(null, ...input);
     const time = process.hrtime.bigint() - start;
     const memory = process.memoryUsage().heapUsed / 1024 / 1024;
 

@@ -60,7 +60,7 @@ const { benchmark } = require('./benchmark');
 
 const allowConsole = argv.console !== undefined ? argv.console : allSolutions.length <= 1 && allSolutions[0].length <= 1;
 
-const runSolution = (fn, input) => {
+const runSolution = async (fn, input) => {
     if (!fn) {
         throw new Error('No solution yet');
     }
@@ -73,12 +73,12 @@ const runSolution = (fn, input) => {
     }
 
     try {
-        const answer = fn.call(null, ...input);
+        const answer = await fn.call(null, ...input);
         if (answer === undefined) {
             throw new Error('No solution yet');
         }
 
-        const time = benchmark({ fn, params: input, targetTime: argv.time, targetRuns: argv.runs, minRuns: argv.minRuns });
+        const time = await benchmark({ fn, params: input, targetTime: argv.time, targetRuns: argv.runs, minRuns: argv.minRuns });
 
         // Restore console.log
         if (!allowConsole) {
@@ -96,87 +96,90 @@ const runSolution = (fn, input) => {
     }
 };
 
-const years = argv.year.length ? argv.year : Object.keys(allSolutions);
-const days = argv.day.length ? argv.day : Array.from(Array(25)).map((_, index) => index + 1);
+(async () => {
+    const years = argv.year.length ? argv.year : Object.keys(allSolutions);
+    const days = argv.day.length ? argv.day : Array.from(Array(25)).map((_, index) => index + 1);
 
-const yearTotals = [];
-let timeTotal = 0;
-let solvedTotal = 0;
-years.forEach((year) => {
-    if (year === 0) {
-        year = Math.max(...Object.keys(allSolutions));
-        while (!allSolutions[year]) {
-            year -= 1;
-        }
-    }
-
-    const solutionYear = allSolutions[year];
-    let timeYear = 0;
-    let solvedYear = 0;
-
-    if (!solutionYear) {
-        console.log(formatError([year], 'No solutions yet'));
-        console.log('');
-        return;
-    }
-
-    days.forEach((day) => {
-        if (day === 0) {
-            day = 25;
-            while (!solutionYear['day' + day]) {
-                day -= 1;
+    const yearTotals = [];
+    let timeTotal = 0;
+    let solvedTotal = 0;
+    for (let year of years) {
+        if (year === 0) {
+            year = Math.max(...Object.keys(allSolutions));
+            while (!allSolutions[year]) {
+                year -= 1;
             }
         }
 
-        const solutionDay = solutionYear['day' + day];
-        if (!solutionDay || !solutionDay.defaultInput) {
-            console.log(formatError([year, day], 'No solution yet'));
+        const solutionYear = allSolutions[year];
+        let timeYear = 0;
+        let solvedYear = 0;
+
+        if (!solutionYear) {
+            console.log(formatError([year], 'No solutions yet'));
+            console.log('');
             return;
         }
 
-        const input = argv.input || [solutionDay.defaultInput];
-
-        if (argv.part === 0) {
-            try {
-                const [answer, timePart] = runSolution(solutionDay.solution, input);
-                console.log(formatInfo([year, day], timePart, answer));
-                if (timePart) {
-                    timeYear += timePart;
-                    solvedYear += 1;
+        for (let day of days) {
+            if (day === 0) {
+                day = 25;
+                while (!solutionYear['day' + day]) {
+                    day -= 1;
                 }
-            } catch (error) {
-                console.log(formatError([year, day], error.message));
             }
-        }
-        [1, 2].forEach((part) => {
-            if ((argv.part & part) !== 0) {
+
+            const solutionDay = solutionYear['day' + day];
+            if (!solutionDay || !solutionDay.defaultInput) {
+                console.log(formatError([year, day], 'No solution yet'));
+                continue;
+            }
+
+            const input = argv.input || [solutionDay.defaultInput];
+
+            if (argv.part === 0) {
                 try {
-                    const [answer, timePart] = runSolution(solutionDay['part' + part], (days.length === 25 && day === 25 && part === 2) ? [...input, solvedYear] : input);
-                    console.log(formatInfo([year, day, part], timePart, answer));
+                    const [answer, timePart] = await runSolution(solutionDay.solution, input);
+                    console.log(formatInfo([year, day], timePart, answer));
                     if (timePart) {
                         timeYear += timePart;
                         solvedYear += 1;
                     }
                 } catch (error) {
-                    console.log(formatError([year, day, part], error.message));
+                    console.log(formatError([year, day], error.message));
+                }
+            } else {
+                for (const part of [1, 2]) {
+                    if ((argv.part & part) !== 0) {
+                        try {
+                            const [answer, timePart] = await runSolution(solutionDay['part' + part], (days.length === 25 && day === 25 && part === 2) ? [...input, solvedYear] : input);
+                            console.log(formatInfo([year, day, part], timePart, answer));
+                            if (timePart) {
+                                timeYear += timePart;
+                                solvedYear += 1;
+                            }
+                        } catch (error) {
+                            console.log(formatError([year, day, part], error.message));
+                        }
+                    }
                 }
             }
-        });
-    });
+        }
 
-    timeTotal += timeYear;
-    solvedTotal += solvedYear;
-    if (days.length > 1) {
-        const yearLog = formatTotal([year], timeYear, solvedYear, days.length * Math.trunc(argv.part / 3 + 1));
-        yearTotals.push(yearLog);
-        console.log(formatSeparator());
-        console.log(yearLog);
-        console.log('');
+        timeTotal += timeYear;
+        solvedTotal += solvedYear;
+        if (days.length > 1) {
+            const yearLog = formatTotal([year], timeYear, solvedYear, days.length * Math.trunc(argv.part / 3 + 1));
+            yearTotals.push(yearLog);
+            console.log(formatSeparator());
+            console.log(yearLog);
+            console.log('');
+        }
     }
-});
 
-if (years.length > 1) {
-    yearTotals.forEach(log => console.log(log));
-    console.log(formatSeparator('='));
-    console.log(formatTotal('All-time', timeTotal, solvedTotal, Object.keys(allSolutions).length * 50));
-}
+    if (years.length > 1) {
+        yearTotals.forEach(log => console.log(log));
+        console.log(formatSeparator('='));
+        console.log(formatTotal('All-time', timeTotal, solvedTotal, Object.keys(allSolutions).length * 50));
+    }
+})();
