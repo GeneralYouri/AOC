@@ -1,3 +1,3 @@
 require('../library.js');
 
-module.exports = input => input.ints().pairs().countIf(([a, b]) => a < b);
+module.exports = input => input.ints().window(2).countIf(([a, b]) => a < b);
