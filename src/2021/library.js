@@ -165,8 +165,8 @@ const setup = {
     },
     string() {
         // Split the string into an array of substrings based on the given separator string or regex
-        String.prototype.words = function words(regexSeparator = /\s/g) {
-            return this.split(regexSeparator);
+        String.prototype.words = function words(separator = /\s/g) {
+            return this.split(separator);
         };
         String.prototype.groups = function groups() {
             return this.words(/\n\n/g);
@@ -194,6 +194,39 @@ const setup = {
         // `map` For strings; map over characters while receiving and returning a string
         String.prototype.map = function map(fn) {
             return this.split('').map(fn).join('');
+        };
+
+        //
+        String.prototype.substrings = function substrings(...lengths) {
+            return lengths.map((length) => {
+                return range(0, this.length - length).map(i => this.slice(i, i + length));
+                // return this.slice(0, -length + 1).split('').map((_, i) => this.slice(i, i + length));
+            }).flat();
+        };
+
+        //
+        String.prototype.peek = function peek(n = Number.POSITIVE_INFINITY) {
+            const offset = this._takeOffset ?? 0;
+            return this.slice(offset, offset + n);
+        };
+
+        //
+        String.prototype.drop = function drop(n) {
+            const offset = this._takeOffset ?? 0;
+            this._takeOffset = Math.min(this.length, offset + n);
+            return this;
+        };
+
+        //
+        String.prototype.take = function take(n) {
+            const offset = this._takeOffset ?? 0;
+            this._takeOffset = Math.min(this.length, offset + n);
+            return this.slice(offset, offset + n);
+        };
+
+        //
+        String.prototype.reset = function reset() {
+            this._takeOffset = 0;
         };
     },
 };
