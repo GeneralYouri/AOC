@@ -244,16 +244,25 @@ const gcd = (a, b) => {
     return a;
 };
 
-const range = (from, to) => {
+// TODO: Fix edge cases such as from == to
+const range = (from, to, step = undefined) => {
     if (!Array.isArray(from)) {
         from = [from];
     }
     if (!Array.isArray(to)) {
         to = [to];
     }
+
     const sizes = from.map((f, i) => to[i] - f);
-    const length = sizes.reduce((acc, size) => gcd(acc, size));
-    const step = sizes.map(size => size / Math.abs(length));
+    if (step === undefined) {
+        const length = sizes.reduce((acc, size) => gcd(acc, size));
+        step = sizes.map(size => size / Math.abs(length));
+    } else if (!Array.isArray(step)) {
+        step = [step];
+    }
+
+    const index = sizes.findIndex(size => Math.abs(size) !== 0);
+    const length = (to[index] - from[index]) / step[index];
 
     const points = Array.from(Array(length + 1)).map((_, i) => from.map((f, j) => f + i * step[j]));
     return (points[0].length === 1 ? points.flat() : points);
@@ -264,18 +273,211 @@ const isAxisAligned = ([from, to]) => {
 };
 
 
-class Grid {
-    grid;
+class PointSet {
+    points;
 
-    constructor(data) {
-        this.grid = data.map(row => row.slice());
+    constructor(points) {
+        if (Array.isArray(points[0])) {
+            this.points = new Set(points.map(([x, y]) => `${x},${y}`));
+        } else if (typeof points[0] === 'string') {
+            this.points = new Set(points);
+        }
     }
 
-    static fromString(str) {
-        const data = str.lines().map(line => line.split(''));
-        return new Grid(data);
+    transpose() {
+        this.points = new Set(Array.from(this.points).map(hash => hash.split(',').reverse().join(',')));
+        return this;
+    }
+
+    add([x, y]) {
+        this.points.add(`${x},${y}`);
+    }
+
+    delete([x, y]) {
+        this.points.delete(`${x},${y}`);
+    }
+
+    size() {
+        return this.points.size;
+    }
+
+    * [Symbol.iterator]() {
+        for (const point of this.points) {
+            yield point.split(',').map(Number);
+        }
+        // yield* this.points[Symbol.iterator]();
+    }
+
+    minX() {
+        return Math.min(...Array.from(this.points).map(p => Number(p.split(',')[0])));
+    }
+
+    maxX() {
+        return Math.max(...Array.from(this.points).map(p => Number(p.split(',')[0])));
+    }
+
+    minY() {
+        return Math.min(...Array.from(this.points).map(p => Number(p.split(',')[1])));
+    }
+
+    maxY() {
+        return Math.max(...Array.from(this.points).map(p => Number(p.split(',')[1])));
+    }
+
+    toString(chars = ['  ', '█ ']) {
+        return range(this.minY(), this.maxY()).map((y) => {
+            return range(this.minX(), this.maxX()).map((x) => {
+                const isActive = this.points.has(`${x},${y}`);
+                return chars[Number(isActive)];
+            }).join('');
+        }).join('\n');
     }
 }
 
 
-module.exports = { gcd, range, isAxisAligned, Grid };
+class Point {
+    x;
+    y;
+
+    constructor(x, y) {
+        this.x = x.x ?? x;
+        this.y = x.y ?? y;
+    }
+
+    add(p) {
+        return new Point(this.x + (p.x ?? p), this.y + (p.y ?? p));
+    }
+
+    sub(p) {
+        return new Point(this.x - (p.x ?? p), this.y - (p.y ?? p));
+    }
+
+    mul(p) {
+        return new Point(this.x * (p.x ?? p), this.y * (p.y ?? p));
+    }
+
+    neighbours4() {
+        return Delta.neighbours4.map(p => p.add(this));
+    }
+
+    neighbours8() {
+        return Delta.neighbours8.map(p => p.add(this));
+    }
+
+    hash() {
+        return `${this.x},${this.y}`;
+    }
+
+    static fromHash(hash) {
+        return new Point(...hash.split(',').map(Number));
+    }
+}
+
+class Delta extends Point {
+    static Zero = new Delta(0, 0);
+
+    static Right = new Delta(1, 0);
+    static Down = new Delta(0, 1);
+    static Left = Delta.Right.mul(-1);
+    static Up = Delta.Down.mul(-1);
+
+    static UpRight = Delta.Up.add(Delta.Right);
+    static DownRight = Delta.Down.add(Delta.Right);
+    static DownLeft = Delta.Down.add(Delta.Left);
+    static UpLeft = Delta.Up.add(Delta.Left);
+
+    static neighbours4 = [
+        Delta.Up,
+        Delta.Left, Delta.Right,
+        Delta.Down,
+    ];
+
+    static neighbours8 = [
+        Delta.UpLeft, Delta.Up, Delta.UpRight,
+        Delta.Left, Delta.Right,
+        Delta.DownLeft, Delta.Down, Delta.DownRight,
+    ];
+}
+
+// class Grid {
+//     cells;
+//     width;
+//     height;
+//
+//     constructor(grid) {
+//         if (grid instanceof Grid) {
+//             this.height = grid.height;
+//             this.width = grid.width;
+//             this.cells = new Map();
+//             for (const [p, value] of grid) {
+//                 this.cells.set(new Point(p), value);
+//             }
+//         } else {
+//             this.height = grid.length;
+//             this.width = grid[0].length;
+//             this.cells = new Map();
+//             for (let y = 0; y < this.height; y += 1) {
+//                 for (let x = 0; x < this.width; x += 1) {
+//                     this.cells.set(new Point(x, y), grid[y][x]);
+//                 }
+//             }
+//         }
+//     }
+//
+//     // clone() {
+//     //     const grid2 = new Grid();
+//     //
+//     // }
+//
+//     static fromString(dataString) {
+//         const data = dataString.charLines().map(line => line.map(Number));
+//         return new Grid(data);
+//         // Grid.fromArray(data);
+//     }
+//
+//     // static fromArray(dataArray) {
+//     //     this.height = grid.height;
+//     //     this.width = grid.width;
+//     //     this.cells = new Map();
+//     //     for (let y = 0; y < this.height; y += 1) {
+//     //         for (let x = 0; x < this.width; x += 1) {
+//     //             this.cells.set(new Pos(x, y), data[y][x]);
+//     //         }
+//     //     }
+//     // }
+// }
+
+class Grid {
+    cells;
+    width;
+    height;
+
+    constructor(grid) {
+        this.height = grid.length;
+        this.width = grid[0].length;
+        this.cells = new Map();
+        for (let y = 0; y < this.height; y += 1) {
+            for (let x = 0; x < this.width; x += 1) {
+                this.cells.set(new Point(x, y).hash(), grid[y][x]);
+            }
+        }
+    }
+
+    static fromString(dataString) {
+        const data = dataString.charLines().map(line => line.map(Number));
+        return new Grid(data);
+    }
+
+    neighbours4(p) {
+        return p.neighbours4().filter(q => q.x >= 0 && q.x < this.width && q.y >= 0 && q.y < this.height);
+    }
+
+    neighbours8(p) {
+        return p.neighbours8().filter(q => q.x >= 0 && q.x < this.width && q.y >= 0 && q.y < this.height);
+    }
+}
+
+
+module.exports = {
+    gcd, range, isAxisAligned, PointSet, Grid, Point, Delta,
+};
