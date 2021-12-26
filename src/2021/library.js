@@ -3,8 +3,10 @@
 /*
 TODO
 - Integer division, both rounding down and rounding up
-- Array.prototype.zip
-- BFS, DFS, Flood Fill, other maze/pathfinding /graph algorithms and helpers
+- BFS, DFS, Flood Fill, other maze/pathfinding/graph algorithms and helpers
+- 2D Grid helpers
+- An iteration/evolution abstraction, allowing you to run the given function for a given number of times
+- Find the minimum/maximum state for a given evolution algorithm when it strictly decreases or increases until the minimum/maximum
  */
 
 const setup = {
@@ -23,6 +25,11 @@ const setup = {
             return this.accumulate((counts, value) => (counts[value] = (counts[value] ?? 0) + 1), {});
         };
 
+        // Filter all duplicate values out of the array
+        Array.prototype.uniques = function uniques() {
+            return Array.from(new Set(this));
+        };
+
         // Apply the given (optional) map operations on the second dimension of the n-dimensional array
         // If only one operation is specified, it's used on all items; otherwise operations are directly mapped by index
         Array.prototype.mapMap = function mapMap(...fns) {
@@ -32,6 +39,11 @@ const setup = {
             return this.map((row) => {
                 return row.map((cell, i) => (fns[i] ? fns[i](cell) : cell));
             });
+        };
+
+        // Zip the array with the other given arrays
+        Array.prototype.zip = function zip(...values) {
+            return [this, ...values].transpose();
         };
 
         // Calculate the prefix sum array
@@ -57,16 +69,28 @@ const setup = {
             return Array.from(Array(this.length / size)).map((_a, i) => this.slice(size * i, size * i + size));
         };
 
-        // Transpose the first two dimensions in the given n-dimensional array (ie flip their order from [x][y] to [y][x])
+        //
+        Array.prototype.select = function select(indices) {
+            return indices.map(i => this[i]);
+            // return indices.map((index) => {
+            //     let value = this;
+            //     for (const i of index) {
+            //         value = value[i];
+            //     }
+            //     return value;
+            // });
+        };
+
+        // Transpose the first two dimensions in the n-dimensional array (ie flip their order from [x][y] to [y][x])
         Array.prototype.transpose = function transpose() {
             return this[0]?.map((_1, x) => this.map((_2, y) => this[y][x])) ?? this;
         };
 
-        // Group the array items based on the value returns by calling the given callback function on each item
-        Array.prototype.groupBy = function groupBy(fn) {
+        // Group the array items based on the value returned by calling the given callback function on each item
+        Array.prototype.groupBy = function groupBy(getId) {
             const groups = {};
             for (let i = 0; i < this.length; i += 1) {
-                const id = fn(this[i], i);
+                const id = getId(this[i], i);
                 if (!(id in groups)) {
                     groups[id] = [];
                 }
@@ -99,7 +123,7 @@ const setup = {
             return this.reduce((s, n) => s + n, 0);
         };
         Array.prototype.product = function product() {
-            return this.reduce((s, n) => s + n, 0);
+            return this.reduce((s, n) => s * n, 1);
         };
 
         // Get the average value of the Number array
