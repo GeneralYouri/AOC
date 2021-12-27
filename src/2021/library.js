@@ -108,6 +108,11 @@ const setup = {
             }
         };
 
+        // `Array.prototype.sort` but for Number Arrays
+        Array.prototype.intSort = function intSort() {
+            return this.sort((a, b) => a - b);
+        };
+
         // Alternatives to `Math.min` and `Math.max` that only return a value when it's unique, and otherwise return `null`
         Array.prototype.minUnique = function minUnique() {
             const min = Math.min(...this);
@@ -447,33 +452,66 @@ class Delta extends Point {
 //     // }
 // }
 
-class Grid {
+class Cell {
+    grid;
+    point;
+    value;
+
+    constructor(grid, point, value) {
+        this.grid = grid;
+        this.point = point;
+        this.value = value;
+    }
+
+    // neighbours4() {
+    //     return this.grid.neighbours4(this);
+    // }
+    //
+    // neighbours8() {
+    //     return this.grid.neighbours8(this);
+    // }
+}
+
+class Grid extends Array {
     cells;
     width;
     height;
 
     constructor(grid) {
+        super();
         this.height = grid.length;
         this.width = grid[0].length;
-        this.cells = new Map();
+        for (let y = 0; y < this.height; y += 1) {
+            this[y] = grid[y].map((value, x) => new Cell(this, new Point(x, y), value));
+        }
+
+        // TODO: Fix day 15
+        // this.height = grid.length;
+        // this.width = grid[0].length;
+        // this.cells = new Map();
+        // for (let y = 0; y < this.height; y += 1) {
+        //     for (let x = 0; x < this.width; x += 1) {
+        //         this.cells.set(new Point(x, y).hash(), grid[y][x]);
+        //     }
+        // }
+    }
+
+    neighbours4(cell) {
+        const points = cell.point.neighbours4().filter(q => q.x >= 0 && q.x < this.width && q.y >= 0 && q.y < this.height);
+        return points.map(q => this[q.y][q.x]);
+    }
+
+    neighbours8(cell) {
+        const points = cell.point.neighbours8().filter(q => q.x >= 0 && q.x < this.width && q.y >= 0 && q.y < this.height);
+        return points.map(q => this[q.y][q.x]);
+    }
+
+    * [Symbol.iterator]() {
         for (let y = 0; y < this.height; y += 1) {
             for (let x = 0; x < this.width; x += 1) {
-                this.cells.set(new Point(x, y).hash(), grid[y][x]);
+                yield this[y][x];
             }
         }
-    }
-
-    static fromString(dataString) {
-        const data = dataString.charLines().map(line => line.map(Number));
-        return new Grid(data);
-    }
-
-    neighbours4(p) {
-        return p.neighbours4().filter(q => q.x >= 0 && q.x < this.width && q.y >= 0 && q.y < this.height);
-    }
-
-    neighbours8(p) {
-        return p.neighbours8().filter(q => q.x >= 0 && q.x < this.width && q.y >= 0 && q.y < this.height);
     }
 }
 
